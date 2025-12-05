@@ -35,7 +35,7 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
     }
 
     if (response.tokenProperties.action === recaptchaAction) {
-      if (response.riskAnalysis && response.riskAnalysis.score >= 0.5) {
+      if (response.riskAnalysis && response.riskAnalysis.score != null && response.riskAnalysis.score >= 0.5) {
         console.log(`The reCAPTCHA score is: ${response.riskAnalysis.score}`);
         return true;
       } else {

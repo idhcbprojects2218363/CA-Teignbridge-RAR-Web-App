@@ -263,7 +263,7 @@ export default function ComplianceForm() {
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
-              value={field.value}
+              value={String(field.value ?? "")}
               className={`grid grid-cols-2 md:grid-cols-3 gap-2`}
             >
               {options.map((option) => (

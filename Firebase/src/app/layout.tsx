@@ -22,7 +22,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
         {siteKey && (
           <Script 
             src={`https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`}
@@ -36,9 +36,10 @@ export default function RootLayout({
             <Image
                 src="https://citizensadviceteignbridge.org.uk/wp-content/uploads/2016/02/presentation_blue_Teignbridge.png"
                 alt="Citizens Advice Teignbridge Logo"
-                width={300}
-                height={75}
+                width={800}
+                height={200}
                 priority
+                style={{ width: '300px', height: 'auto' }}
               />
           </Link>
         </header>
