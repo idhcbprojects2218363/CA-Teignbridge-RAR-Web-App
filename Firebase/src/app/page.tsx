@@ -36,7 +36,7 @@ export default function LandingPage() {
               Guidance on the circumstances under which you should complete the RAR for BYOD form.
             </p>
             <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="https://docs.google.com/document/d/15vB9mI_JtNVp7zNMxcv7ztsKIK3_hfAuidZmS7Mdhqg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Read the Guidance</a>
+                <a href="" target="_blank" rel="noopener noreferrer">Read the Guidance</a>
             </Button>
           </CardContent>
         </Card>
@@ -52,7 +52,7 @@ export default function LandingPage() {
               Understand the importance of the RAR process and why this form is a required step for using personal devices.
             </p>
              <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="https://docs.google.com/document/d/1v1lHiZv1lXcC_iPISWoI3lk9aGJArWMvSGucME-xzRk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Learn More</a>
+                <a href="" target="_blank" rel="noopener noreferrer">Learn More</a>
             </Button>
           </CardContent>
         </Card>
@@ -68,7 +68,7 @@ export default function LandingPage() {
               Find out about the next steps, what to expect, and how to get help after you have submitted the form.
             </p>
             <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">See Next Steps</a>
+                <a href="" target="_blank" rel="noopener noreferrer">See Next Steps</a>
             </Button>
           </CardContent>
         </Card>
