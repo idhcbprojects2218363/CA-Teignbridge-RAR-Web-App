@@ -7,14 +7,27 @@ import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterp
 async function verifyRecaptcha(token: string): Promise<boolean> {
   const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
   const recaptchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-  
-  if (!projectId || !recaptchaKey) {
-    console.error("reCAPTCHA environment variables not set (GOOGLE_CLOUD_PROJECT_ID or NEXT_PUBLIC_RECAPTCHA_SITE_KEY).");
+  const privateKey = process.env.RECAPTCHA_PRIVATE_KEY;
+  const clientEmail = process.env.RECAPTCHA_CLIENT_EMAIL;
+
+  if (!projectId || !recaptchaKey || !privateKey || !clientEmail) {
+    console.error("reCAPTCHA environment variables are not fully set. Please check your .env file and ensure you have a service account key.");
     return false;
   }
 
+  // The private key from the .env file might have escaped newlines.
+  // We need to replace them with actual newline characters.
+  const formattedPrivateKey = privateKey.replace(/\\n/g, '\n');
+
   try {
-    const client = new RecaptchaEnterpriseServiceClient({ projectId });
+    const client = new RecaptchaEnterpriseServiceClient({
+      credentials: {
+        private_key: formattedPrivateKey,
+        client_email: clientEmail,
+      },
+      project_id: projectId,
+    });
+    
     const projectPath = client.projectPath(projectId);
 
     const request = {
@@ -34,20 +47,17 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
       return false;
     }
 
-    // For reCAPTCHA v2 checkbox, the action property is not populated.
-    // The verification is based on the token validity and the risk score.
     if (response.riskAnalysis && response.riskAnalysis.score != null) {
-        console.log(`The reCAPTCHA score is: ${response.riskAnalysis.score}`);
-        // A score of > 0.5 is generally considered a good interaction for v2 checkbox.
-        return response.riskAnalysis.score > 0.5;
+      console.log(`The reCAPTCHA score is: ${response.riskAnalysis.score}`);
+      // Adjust this threshold based on your risk tolerance
+      return response.riskAnalysis.score > 0.5;
     }
     
-    // As a fallback, if score is not available but the token is valid, we can cautiously accept.
-    console.warn("reCAPTCHA score was not available, but token was valid. Accepting.");
+    console.warn("reCAPTCHA score was not available, but token was valid. Accepting by default.");
     return true;
 
   } catch (error) {
-    console.error("Error during reCAPTCHA verification:", error);
+    console.error("Error during reCAPTCHA verification client call:", error);
     return false;
   }
 }
