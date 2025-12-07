@@ -12,9 +12,9 @@ export default function LandingPage() {
           LCA Teignbridge's formal "Read, Apply, Review" (RAR) process for BYOD usage
         </h1>
         <p className="mt-6 text-lg text-black">
-          Welcome and thank you for visiting this introduction page.
+          Welcome and thank you for visiting.
           <br />
-          Before you fill out the form please read the following guidance.
+          Before you fill out the form, please read the guidance cards below the following button
         </p>
         <div className="mt-10">
           <Button asChild size="lg" className="font-bold text-lg">
@@ -33,10 +33,10 @@ export default function LandingPage() {
           </CardHeader>
           <CardContent>
             <p className="text-black">
-              Guidance on the circumstances under which you should complete the RAR for BYOD form.
+              Guidance on the circumstances under which you should complete the RAR form.
             </p>
             <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="" target="_blank" rel="noopener noreferrer">Read the Guidance</a>
+                <a href="https://docs.google.com/document/d/15vB9mI_JtNVp7zNMxcv7ztsKIK3_hfAuidZmS7Mdhqg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Read the Guidance</a>
             </Button>
           </CardContent>
         </Card>
@@ -52,7 +52,7 @@ export default function LandingPage() {
               Understand the importance of the RAR process and why this form is a required step for using personal devices.
             </p>
              <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="" target="_blank" rel="noopener noreferrer">Learn More</a>
+                <a href="https://docs.google.com/document/d/1v1lHiZv1lXcC_iPISWoI3lk9aGJArWMvSGucME-xzRk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Learn More</a>
             </Button>
           </CardContent>
         </Card>
@@ -68,7 +68,7 @@ export default function LandingPage() {
               Find out about the next steps, what to expect, and how to get help after you have submitted the form.
             </p>
             <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="" target="_blank" rel="noopener noreferrer">See Next Steps</a>
+                <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">See Next Steps</a>
             </Button>
           </CardContent>
         </Card>

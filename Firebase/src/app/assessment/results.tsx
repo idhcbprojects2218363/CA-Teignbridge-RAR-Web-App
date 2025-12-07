@@ -51,7 +51,7 @@ export default function AssessmentResults() {
                     <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4"/>
                         <strong>Read the FAQ:</strong>
-                        <a href="" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
+                        <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
                              What to do After your submission
                         </a>
                     </div>
@@ -67,7 +67,7 @@ export default function AssessmentResults() {
           <CardContent className="space-y-3 text-center">
               <p>If you requested a meeting, schedule your 1-to-1 appointment now:</p>
               <Button asChild size="lg">
-                  <a href="" target="_blank" rel="noopener noreferrer">
+                  <a href="https://calendar.app.google/BYLddTWzP88xxuLm7" target="_blank" rel="noopener noreferrer">
                       Book Your Appointment (Google Calendar)
                   </a>
               </Button>

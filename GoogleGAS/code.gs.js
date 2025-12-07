@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Google Apps Script for handling BYOD form submissions.
  * This script writes form data to a Google Sheet and sends email notifications.
@@ -23,7 +24,7 @@ const SHEET_NAME = 'RARresponses';
  */
 const HEADERS = [
   'Submission_Timestamp_ISO', 'Response_Due_Date_ISO', 'IP_Address', 'Full_Name',
-  'CA_Email', 'Contact_Email', 'Contact_Number', 'Preferred_Contact_Method',
+  'Contact_Email', 'Receive_Copy', 'Contact_Number', 'Preferred_Contact_Method',
   'Reason_for_BYOD', 'Device_Type', 'Device_Count', 'Device_Model_Name',
   'OS_and_Version', 'Web_Browser_and_Version', 'Malware_Protection_Software',
   'Email_Client_Used', 'Office_Apps_Used', 'Software_Firewall_Assurance',
@@ -32,7 +33,7 @@ const HEADERS = [
   'Supported_Licensed', 'In_Scope', 'Automatic_Updates', 'Anti_Malware_All',
   'Antimalware_Updates', 'Antimalware_Scans', 'Antimalware_Web_Protection',
   'Personalised_Help', 'Comments_Feedback', 'Acknowledge_Policy_Compliance',
-  'Acknowledge_Security_Risks', 'Acknowledge_Security_Measures'
+  'Acknowledge_Security_Risks', 'Acknowledge_Security_Measures', 'Official_App_Stores_Assurance'
 ];
 
 // --- SPREADSHEET & MENU SETUP ---
@@ -48,24 +49,27 @@ function onOpen() {
 }
 
 /**
- * Sets up the "RARresponses" sheet and validates/writes the required headers.
- * This function is callable from the custom "BYOD Admin" menu.
+ * Ensures the target sheet exists and its headers match the configuration.
+ * This function is self-correcting.
+ * @param {GoogleAppsScript.Spreadsheet.Spreadsheet} spreadsheet - The active spreadsheet.
+ * @returns {GoogleAppsScript.Spreadsheet.Sheet} The validated and possibly corrected sheet.
  */
-function setupHeaders() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+function ensureSheetAndHeaders(spreadsheet) {
   let sheet = spreadsheet.getSheetByName(SHEET_NAME);
 
   if (!sheet) {
     sheet = spreadsheet.insertSheet(SHEET_NAME);
-    SpreadsheetApp.getUi().alert(`Sheet "${SHEET_NAME}" was created.`);
   }
 
   const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
   const currentHeaders = headerRange.getValues()[0];
 
   let needsUpdate = false;
-  if (currentHeaders.length !== HEADERS.length) {
-    needsUpdate = true;
+  // Check if headers exist and if they are correct
+  if (currentHeaders.length === 0 || currentHeaders.join('') === '') {
+      needsUpdate = true;
+  } else if (currentHeaders.length !== HEADERS.length) {
+      needsUpdate = true;
   } else {
     for (let i = 0; i < HEADERS.length; i++) {
       if (currentHeaders[i] !== HEADERS[i]) {
@@ -77,11 +81,30 @@ function setupHeaders() {
 
   if (needsUpdate) {
     headerRange.setValues([HEADERS]);
-    SpreadsheetApp.getUi().alert(`Headers have been set successfully in "${SHEET_NAME}".`);
-  } else {
-    SpreadsheetApp.getUi().alert(`Headers in "${SHEET_NAME}" are already correct.`);
+    SpreadsheetApp.flush(); // Ensure changes are applied
+  }
+  
+  return sheet;
+}
+
+
+/**
+ * Sets up the "RARresponses" sheet and validates/writes the required headers.
+ * This function is callable from the custom "BYOD Admin" menu.
+ */
+function setupHeaders() {
+  const ui = SpreadsheetApp.getUi();
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  
+  try {
+    ensureSheetAndHeaders(spreadsheet);
+    ui.alert(`Sheet "${SHEET_NAME}" is correctly set up.`);
+  } catch (e) {
+    console.error('Error in setupHeaders:', e);
+    ui.alert('An error occurred during setup: ' + e.message);
   }
 }
+
 
 // --- EMAIL FUNCTIONS ---
 
@@ -90,9 +113,9 @@ function setupHeaders() {
  * @param {object} data - The parsed JSON data from the form submission.
  */
 function sendApplicantEmail(data) {
-  const applicantEmail = data.CA_Email || data.Contact_Email;
+  const applicantEmail = data.Contact_Email;
   if (!applicantEmail) {
-    console.error('No applicant email found (neither CA_Email nor Contact_Email was provided).');
+    console.error('No applicant email found (Contact_Email was not provided).');
     return;
   }
   
@@ -162,12 +185,8 @@ function doPost(e) {
     lock.waitLock(30000); 
 
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = spreadsheet.getSheetByName(SHEET_NAME);
-
-    if (!sheet) {
-      setupHeaders();
-      sheet = spreadsheet.getSheetByName(SHEET_NAME);
-    }
+    // Ensure sheet and headers are correct before proceeding
+    const sheet = ensureSheetAndHeaders(spreadsheet);
     
     const data = JSON.parse(e.postData.contents);
     const rowData = HEADERS.map(header => data[header] !== undefined ? data[header] : 'N/A');
@@ -175,7 +194,9 @@ function doPost(e) {
     sheet.appendRow(rowData);
     
     // Send emails after data has been written successfully
-    sendApplicantEmail(data);
+    if (data.Receive_Copy === true) {
+      sendApplicantEmail(data);
+    }
     sendITManagerEmail(data);
 
     return ContentService
