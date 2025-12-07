@@ -14,7 +14,7 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
   }
 
   try {
-    const client = new RecaptchaEnterpriseServiceClient();
+    const client = new RecaptchaEnterpriseServiceClient({ projectId });
     const projectPath = client.projectPath(projectId);
 
     const request = {
@@ -30,7 +30,7 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
     const [response] = await client.createAssessment(request);
 
     if (!response.tokenProperties?.valid) {
-      console.log(`The CreateAssessment call failed because the token was: ${response.tokenProperties?.invalidReason}`);
+      console.log(`The CreateAssessment call failed because the token was: ${response.tokenProperties.invalidReason}`);
       return false;
     }
 
