@@ -1,4 +1,6 @@
 
+require('dotenv').config();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -34,6 +36,11 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  env: {
+    GOOGLE_CLOUD_PROJECT_ID: process.env.GOOGLE_CLOUD_PROJECT_ID,
+    GOOGLE_SCRIPT_WEB_APP_URL: process.env.GOOGLE_SCRIPT_WEB_APP_URL,
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
   },
 };
 
