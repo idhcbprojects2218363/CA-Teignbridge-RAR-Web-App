@@ -51,7 +51,7 @@ export default function AssessmentResults() {
                     <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4"/>
                         <strong>Read the FAQ:</strong>
-                        <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
+                        <a href="" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
                              What to do After your submission
                         </a>
                     </div>
