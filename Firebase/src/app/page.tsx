@@ -68,7 +68,7 @@ export default function LandingPage() {
               Find out about the next steps, what to expect, and how to get help after you have submitted the form.
             </p>
             <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">See Next Steps</a>
+                <a href="" target="_blank" rel="noopener noreferrer">See Next Steps</a>
             </Button>
           </CardContent>
         </Card>
