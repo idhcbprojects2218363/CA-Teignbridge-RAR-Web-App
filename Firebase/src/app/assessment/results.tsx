@@ -67,7 +67,7 @@ export default function AssessmentResults() {
           <CardContent className="space-y-3 text-center">
               <p>If you requested a meeting, schedule your 1-to-1 appointment now:</p>
               <Button asChild size="lg">
-                  <a href="https://calendar.app.google/BYLddTWzP88xxuLm7" target="_blank" rel="noopener noreferrer">
+                  <a href="" target="_blank" rel="noopener noreferrer">
                       Book Your Appointment (Google Calendar)
                   </a>
               </Button>
