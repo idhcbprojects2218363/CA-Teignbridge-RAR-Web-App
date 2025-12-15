@@ -4,10 +4,15 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import Image from 'next/image';
 import Link from 'next/link';
+<<<<<<< Updated upstream
 import Script from 'next/script';
+=======
+import { AccessibilityProvider } from '@/components/accessibility/accessibility-provider';
+import AccessibilityToolbar from '@/components/accessibility/accessibility-toolbar';
+>>>>>>> Stashed changes
 
 export const metadata: Metadata = {
-  title: 'BYOD Compliance Tracker',
+  title: 'RAR Application Form',
   description: 'BYOD Compliance Tracker Form',
 };
 
@@ -16,12 +21,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+<<<<<<< Updated upstream
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
         {siteKey && (
           <Script 
@@ -29,22 +34,28 @@ export default function RootLayout({
             strategy="beforeInteractive"
           />
         )}
+=======
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+>>>>>>> Stashed changes
       </head>
-      <body className="font-body antialiased" suppressHydrationWarning>
-        <header className="container mx-auto flex justify-center py-6">
-          <Link href="/">
-            <Image
-                src="https://citizensadviceteignbridge.org.uk/wp-content/uploads/2016/02/presentation_blue_Teignbridge.png"
-                alt="Citizens Advice Teignbridge Logo"
-                width={800}
-                height={200}
-                priority
-                style={{ width: '300px', height: 'auto' }}
-              />
-          </Link>
-        </header>
-        {children}
-        <Toaster />
+      <body className="font-body antialiased">
+        <AccessibilityProvider>
+          <header className="container mx-auto flex justify-center py-6">
+            <Link href="/">
+              <Image
+                  src="https://citizensadviceteignbridge.org.uk/wp-content/uploads/2016/02/presentation_blue_Teignbridge.png"
+                  alt="Citizens Advice Teignbridge Logo"
+                  width={800}
+                  height={200}
+                  priority
+                  style={{ width: '300px', height: 'auto' }}
+                />
+            </Link>
+          </header>
+          <AccessibilityToolbar />
+          <main>{children}</main>
+          <Toaster />
+        </AccessibilityProvider>
       </body>
     </html>
   );

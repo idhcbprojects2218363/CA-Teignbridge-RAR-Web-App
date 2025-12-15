@@ -1,9 +1,6 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@google-cloud/recaptcha-enterprise'],
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -22,7 +19,8 @@ const nextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'https'
+        ,
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
@@ -35,6 +33,11 @@ const nextConfig = {
       },
     ],
   },
+<<<<<<< Updated upstream
+=======
+  experimental: {
+  }
+>>>>>>> Stashed changes
 };
 
 module.exports = nextConfig;

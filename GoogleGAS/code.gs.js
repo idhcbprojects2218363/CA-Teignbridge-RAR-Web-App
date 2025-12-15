@@ -1,52 +1,57 @@
+<<<<<<< Updated upstream
 /**
  * @fileoverview Google Apps Script for handling BYOD form submissions.
  * This script writes form data to a Google Sheet and sends email notifications.
  */
+=======
 
-// --- CONFIGURATION ---
-/**
- * The email address of the IT Manager who will receive notifications.
- * @type {string}
- */
-const IT_MANAGER_EMAIL = 'it-manager@example.com'; // <<< IMPORTANT: REPLACE WITH ACTUAL IT MANAGER EMAIL
+const SHEET_ID = "YOUR_GOOGLE_SHEET_ID"; // Replace with your Google Sheet ID
+const SHEET_NAME = "YOUR_SHEET_TAB_NAME";
+const IT_MANAGER_EMAIL = "your-it-manager-email@example.com"; // Replace with IT Manager's email
+>>>>>>> Stashed changes
 
-/**
- * The name of the sheet where form responses will be stored.
- * @type {string}
- */
-const SHEET_NAME = 'RARresponses';
-
-/**
- * The required headers for the sheet, in the correct order.
- * This array defines the columns from A to AJ.
- * @type {string[]}
- */
 const HEADERS = [
+<<<<<<< Updated upstream
   'Submission_Timestamp_ISO', 'Response_Due_Date_ISO', 'IP_Address', 'Full_Name',
   'CA_Email', 'Contact_Email', 'Contact_Number', 'Preferred_Contact_Method',
+=======
+  'Submission_ID', 'Submission_Timestamp_ISO', 'Response_Due_Date_ISO', 'IP_Address', 'Full_Name',
+  'Contact_Email', 'Receive_Copy', 'Contact_Number', 'Preferred_Contact_Method',
+>>>>>>> Stashed changes
   'Reason_for_BYOD', 'Device_Type', 'Device_Count', 'Device_Model_Name',
   'OS_and_Version', 'Web_Browser_and_Version', 'Malware_Protection_Software',
-  'Email_Client_Used', 'Office_Apps_Used', 'Software_Firewall_Assurance',
+  'Email_Client_Used', 'Office_Apps_Used', 'Other_Cloud_Services', 'MFA_On_Cloud_Services',
+  'Software_Firewall_Assurance',
   'Uninstall_Unused_Apps', 'Remove_Unused_Accounts', 'Strong_Passwords_MFA_Assurance',
+<<<<<<< Updated upstream
   'Device_Lock_Assurance', 'Separate_User_Account_Assurance', 'Update_Devices',
   'Supported_Licensed', 'In_Scope', 'Automatic_Updates', 'Anti_Malware_All',
   'Antimalware_Updates', 'Antimalware_Scans', 'Antimalware_Web_Protection',
   'Personalised_Help', 'Comments_Feedback', 'Acknowledge_Policy_Compliance',
   'Acknowledge_Security_Risks', 'Acknowledge_Security_Measures'
+=======
+  'Device_Lock_Assurance', 'Separate_User_Account_Assurance', 'Official_App_Stores_Assurance',
+  'AutoRun_Disabled_Assurance', 'Update_Devices', 'Supported_Licensed', 'In_Scope', 'Automatic_Updates',
+  'Anti_Malware_All', 'Antimalware_Updates', 'Antimalware_Scans',
+  'Antimalware_Web_Protection', 'Personalised_Help', 'Comments_Feedback',
+  'Acknowledge_Policy_Compliance', 'Acknowledge_Security_Risks', 'Acknowledge_Security_Measures'
+>>>>>>> Stashed changes
 ];
 
-// --- SPREADSHEET & MENU SETUP ---
 
 /**
- * Runs when the spreadsheet is opened. Adds a custom menu for administrative tasks.
+ * Creates a menu item in the Google Sheet to run the setup function.
  */
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('BYOD Admin')
-    .addItem('Setup Sheet and Headers', 'setupHeaders')
+    .createMenu('Admin')
+    .addItem('Setup Sheet Headers', 'setupSheet')
+    .addItem('Verify Headers', 'verifySheetHeaders')
+    .addItem('Backfill Submission IDs', 'backfillSubmissionIDs')
     .addToUi();
 }
 
+<<<<<<< Updated upstream
 /**
  * Sets up the "RARresponses" sheet and validates/writes the required headers.
  * This function is callable from the custom "BYOD Admin" menu.
@@ -66,15 +71,84 @@ function setupHeaders() {
   let needsUpdate = false;
   if (currentHeaders.length !== HEADERS.length) {
     needsUpdate = true;
+=======
+
+/**
+ * Sets up the sheet by populating any empty cells in the header row.
+ * Run this function manually from the Apps Script editor.
+ */
+function setupSheet() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const headerRange = sheet.getRange(1, 1, 1, sheet.getMaxColumns());
+  const headerValues = headerRange.getValues()[0];
+  let updated = false;
+
+  for (let i = 0; i < HEADERS.length; i++) {
+    if (!headerValues[i]) { // If the cell is empty
+      sheet.getRange(1, i + 1).setValue(HEADERS[i]);
+      updated = true;
+    }
+  }
+
+  if (updated) {
+    SpreadsheetApp.getUi().alert('Sheet headers have been updated successfully.');
+>>>>>>> Stashed changes
   } else {
-    for (let i = 0; i < HEADERS.length; i++) {
-      if (currentHeaders[i] !== HEADERS[i]) {
-        needsUpdate = true;
-        break;
+    SpreadsheetApp.getUi().alert('Headers already seem to be in place. No changes made.');
+  }
+}
+
+
+/**
+ * Compares the actual sheet headers with the expected HEADERS constant.
+ * Reports all mismatches to the user via a single alert.
+ */
+function verifySheetHeaders() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const ui = SpreadsheetApp.getUi();
+
+  const lastColumn = sheet.getLastColumn();
+  const actualHeaders = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
+
+  let mismatches = [];
+  let scriptIndex = 0;
+  let sheetIndex = 0;
+
+  while (scriptIndex < HEADERS.length || sheetIndex < actualHeaders.length) {
+    const expected = HEADERS[scriptIndex];
+    const actual = actualHeaders[sheetIndex];
+
+    if (expected === actual) {
+      // Headers match, advance both pointers
+      scriptIndex++;
+      sheetIndex++;
+    } else {
+      // Headers do not match
+      const mismatchMessage = 
+        `Mismatch at Column ${String.fromCharCode(65 + sheetIndex)}:\n` +
+        `  - Expected: "${expected || '[End of Script Headers]'}"\n` +
+        `  - Found: "${actual || '[End of Sheet Headers]'}"`;
+      mismatches.push(mismatchMessage);
+
+      // Check if the expected header exists later in the sheet
+      const foundIndex = actualHeaders.indexOf(expected, sheetIndex + 1);
+      
+      if (foundIndex !== -1) {
+        // Found the expected header later, implies missing columns in between.
+        // We advance the scriptIndex and let the loop continue checking the sheet columns
+        // against the next expected headers. This correctly identifies renamed columns.
+         scriptIndex++;
+      } else {
+        // Could not find the expected header later in the sheet.
+        // This could mean a renamed column or an extra column in the sheet.
+        // Advance both to prevent an infinite loop.
+        scriptIndex++;
+        sheetIndex++;
       }
     }
   }
 
+<<<<<<< Updated upstream
   if (needsUpdate) {
     headerRange.setValues([HEADERS]);
     SpreadsheetApp.getUi().alert(`Headers have been set successfully in "${SHEET_NAME}".`);
@@ -93,74 +167,83 @@ function sendApplicantEmail(data) {
   const applicantEmail = data.CA_Email || data.Contact_Email;
   if (!applicantEmail) {
     console.error('No applicant email found (neither CA_Email nor Contact_Email was provided).');
+=======
+  if (mismatches.length > 0) {
+    let message = 'Header verification found mismatches!\n\n' +
+                  'Please review the list below. For each mismatch, you may need to insert a new column to the left of the specified column. After making corrections, rerun this verification.\n\n' +
+                  mismatches.join('\n\n');
+    ui.alert('Header Mismatch', message, ui.ButtonSet.OK);
+  } else {
+    ui.alert('Header verification successful! All columns match the script definition.');
+  }
+}
+
+
+/**
+ * Backfills missing Submission_IDs for existing records.
+ * Iterates through the sheet, and for any row with an empty Submission_ID,
+ * it generates a new ID based on the Submission_Timestamp_ISO.
+ */
+function backfillSubmissionIDs() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  const ui = SpreadsheetApp.getUi();
+
+  const headerRow = values[0];
+  const idColIndex = headerRow.indexOf('Submission_ID');
+  const timestampColIndex = headerRow.indexOf('Submission_Timestamp_ISO');
+
+  if (idColIndex === -1 || timestampColIndex === -1) {
+    ui.alert('Error: Could not find "Submission_ID" or "Submission_Timestamp_ISO" columns.');
+>>>>>>> Stashed changes
     return;
   }
-  
-  const subject = 'Your BYOD RAR Application Has Been Submitted';
-  
-  let htmlBody = `
-    <p>Dear ${data.Full_Name || 'Applicant'},</p>
-    <p>Thank you for completing the "Read, Apply, Review" (RAR) process application. We have successfully received your submission made on ${new Date(data.Submission_Timestamp_ISO).toLocaleString()}.</p>
-    <p>Your dedication to helping LCA Teignbridge with its Cyber Essentials (CE) certification is vital for ensuring collective security, which ultimately benefits our clients.</p>
-    <h3>What to Expect Next</h3>
-    <ul>
-      <li><strong>Initial Review:</strong> The IT Manager will review your application to determine your device's compliance status and identify any support needs.</li>
-      <li><strong>One-to-One Appointment:</strong> If you requested assistance, you will receive information on how to schedule a meeting.</li>
-    </ul>
-    <h3>Your Submitted Information:</h3>
-    <table border="1" cellpadding="5" style="border-collapse: collapse; width: 100%;">
-  `;
 
-  // Create an HTML table from the submitted data
-  for (const key of HEADERS) {
-    if (data.hasOwnProperty(key)) {
-       htmlBody += `<tr><td style="width: 40%; font-weight: bold;">${key.replace(/_/g, ' ')}</td><td>${data[key]}</td></tr>`;
+  let updatedCount = 0;
+
+  for (let i = 1; i < values.length; i++) { // Start from row 2 (index 1)
+    const row = values[i];
+    if (!row[idColIndex] && row[timestampColIndex]) { // If ID is empty but timestamp exists
+      const timestampStr = row[timestampColIndex];
+      const date = new Date(timestampStr);
+
+      if (!isNaN(date.getTime())) {
+        const yyyy = date.getUTCFullYear();
+        const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(date.getUTCDate()).padStart(2, '0');
+        const hh = String(date.getUTCHours()).padStart(2, '0');
+        const min = String(date.getUTCMinutes()).padStart(2, '0');
+        const ss = String(date.getUTCSeconds()).padStart(2, '0');
+        const randomPart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        
+        const newId = `${yyyy}${mm}${dd}-${hh}${min}${ss}-${randomPart}`;
+        
+        sheet.getRange(i + 1, idColIndex + 1).setValue(newId);
+        updatedCount++;
+      }
     }
   }
 
-  htmlBody += '</table><p>You may be contacted for further information if required.</p><p>Kind regards,<br>LCA Teignbridge IT</p>';
-
-  GmailApp.sendEmail(applicantEmail, subject, '', { htmlBody: htmlBody });
-}
-
-/**
- * Sends a notification email to the IT Manager.
- * @param {object} data - The parsed JSON data from the form submission.
- */
-function sendITManagerEmail(data) {
-  const subject = `New BYOD RAR Submission from ${data.Full_Name}`;
-  let htmlBody = `
-    <p>A new BYOD RAR application has been submitted by <strong>${data.Full_Name}</strong>.</p>
-    <p>The details have been added to the "${SHEET_NAME}" Google Sheet.</p>
-    <h3>Submission Details:</h3>
-    <table border="1" cellpadding="5" style="border-collapse: collapse; width: 100%;">
-  `;
-
-  // Create an HTML table from the submitted data
-  for (const key of HEADERS) {
-     if (data.hasOwnProperty(key)) {
-       htmlBody += `<tr><td style="width: 40%; font-weight: bold;">${key.replace(/_/g, ' ')}</td><td>${data[key]}</td></tr>`;
-    }
+  if (updatedCount > 0) {
+    ui.alert(`Successfully backfilled ${updatedCount} Submission IDs.`);
+  } else {
+    ui.alert('No empty Submission IDs found to backfill.');
   }
-
-  htmlBody += '</table><p>Please review the submission in the Google Sheet at your earliest convenience.</p>';
-  
-  GmailApp.sendEmail(IT_MANAGER_EMAIL, subject, '', { htmlBody: htmlBody });
 }
 
 
-// --- WEB APP ENTRY POINT ---
-
 /**
- * Handles HTTP POST requests from the web application.
- * @param {object} e - The event parameter containing the POST data.
- * @returns {ContentService.TextOutput} A JSON response indicating success or failure.
+ * Handles HTTP POST requests, appends data to the sheet, and sends emails.
+ * This is the new primary function for handling form submissions.
+ * @param {Object} e The event object from the POST request.
  */
 function doPost(e) {
   const lock = LockService.getScriptLock();
   try {
-    lock.waitLock(30000); 
+    lock.waitLock(30000);
 
+<<<<<<< Updated upstream
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     let sheet = spreadsheet.getSheetByName(SHEET_NAME);
 
@@ -168,26 +251,120 @@ function doPost(e) {
       setupHeaders();
       sheet = spreadsheet.getSheetByName(SHEET_NAME);
     }
+=======
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
+>>>>>>> Stashed changes
     
-    const data = JSON.parse(e.postData.contents);
-    const rowData = HEADERS.map(header => data[header] !== undefined ? data[header] : 'N/A');
+    // The data from the Next.js server action will be in a JSON string in the post body.
+    const submissionData = JSON.parse(e.postData.contents);
 
+    // Create the row data in the correct order based on HEADERS
+    const rowData = HEADERS.map(header => submissionData[header] || ''); // Use empty string for missing values
+
+    // Append the new row to the sheet
     sheet.appendRow(rowData);
     
+<<<<<<< Updated upstream
     // Send emails after data has been written successfully
     sendApplicantEmail(data);
     sendITManagerEmail(data);
+=======
+    // Trigger the emails with the received data
+    if (submissionData.Receive_Copy) {
+      sendApplicantEmail(submissionData);
+    }
+    sendITManagerEmail(submissionData);
+>>>>>>> Stashed changes
 
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'success', message: 'Data saved and emails sent.' }))
+    // Return a success response
+    return ContentService.createTextOutput(JSON.stringify({ 'result': 'success' }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
-    console.error('Error in doPost:', error);
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'error', message: error.toString() }))
+    Logger.log('Error in doPost: ' + error.toString());
+    // Return an error response to the calling application
+    return ContentService.createTextOutput(JSON.stringify({ 'result': 'error', 'message': error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   } finally {
-    lock.releaseLock();
+      if (lock.hasLock()) {
+        lock.releaseLock();
+      }
   }
 }
+
+
+/**
+ * Sends a confirmation email to the applicant.
+ * @param {Object} data The submission data.
+ */
+function sendApplicantEmail(data) {
+  const recipient = data.Contact_Email;
+  const subject = `Your RAR Application Has Been Submitted (ID: ${data.Submission_ID})`;
+  let body = `
+    <p>Dear ${data.Full_Name},</p>
+    <p>Thank you for completing the "Read, Apply, Review" (RAR) process application. Your submission has been received and will be reviewed by the IT Manager.</p>
+    <p><strong>Your Submission ID:</strong> ${data.Submission_ID}</p>
+    <p>Please quote this ID in any communication with the IT Manager.</p>
+    <p><strong>Submission Details:</strong></p>
+    <ul>
+  `;
+
+  for (const key in data) {
+    // Only include fields that have a value and are part of the headers.
+    if (data[key] && HEADERS.includes(key)) {
+      body += `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${data[key]}</li>`;
+    }
+  }
+  
+  body += `
+    </ul>
+    <p><strong>What's Next?</strong></p>
+    <p>The IT Manager will review your application. If you requested personalised help, please ensure you book a 1-to-1 appointment using the link on the submission confirmation page.</p>
+    <p>If you missed the booking link, or if you selected "No" for help but have changed your mind, please refer to the document below for guidance on next steps.</p>
+    <p><strong>Read Now:</strong> <a href="https://YOUR_AFTER_SUBMISSION_FAQ_DOCUMENT">What to do After your submission</a></p>
+    <p>Thank you for your cooperation.</p>
+    <p>LCA Teignbridge IT</p>
+  `;
+
+  GmailApp.sendEmail(recipient, subject, "", {
+    htmlBody: body,
+    name: 'LCA Teignbridge IT'
+  });
+}
+
+/**
+ * Sends a notification email to the IT Manager.
+ * @param {Object} data The submission data.
+ */
+function sendITManagerEmail(data) {
+  const recipient = IT_MANAGER_EMAIL;
+  const subject = `New RAR Application Submitted by ${data.Full_Name} (ID: ${data.Submission_ID})`;
+  const sheetUrl = SpreadsheetApp.openById(SHEET_ID).getUrl();
+  let body = `
+    <p>A new RAR application has been submitted.</p>
+    <p><strong>Submission ID:</strong> ${data.Submission_ID}</p>
+    <p><strong>Applicant:</strong> ${data.Full_Name}</p>
+    <p><strong>Contact Email:</strong> ${data.Contact_Email}</p>
+    <p><strong>Submission Timestamp:</strong> ${data.Submission_Timestamp_ISO}</p>
+    <p>Full details have been added to the Google Sheet. <a href="${sheetUrl}">Click here to view the sheet.</a></p>
+    <hr>
+    <p><strong>Full Submission Details:</strong></p>
+    <ul>
+  `;
+
+  for (const key in data) {
+     if (data[key] && HEADERS.includes(key)) {
+      body += `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${data[key]}</li>`;
+    }
+  }
+
+   body += `</ul>`;
+
+  GmailApp.sendEmail(recipient, subject, "", {
+    htmlBody: body,
+  });
+}
+
+    
+
+    

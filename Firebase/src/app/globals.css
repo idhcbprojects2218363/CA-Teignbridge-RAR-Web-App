@@ -3,6 +3,112 @@
 @tailwind utilities;
  
 @layer base {
+<<<<<<< Updated upstream
+=======
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 225 12% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 225 12% 18%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 12% 18%;
+ 
+    --primary: 226 59% 41%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 220 14% 85%;
+    --muted-foreground: 220 9% 25%;
+ 
+    --accent: 261 68% 70%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 226 59% 41%;
+ 
+    --radius: 0.5rem;
+
+    --switch-on-background: 142 71% 45%; /* Green */
+    --switch-off-background: 0 72% 51%; /* Red */
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 25%;
+    --muted-foreground: 215 20% 75%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    --switch-on-background: 48 96% 50%; /* Yellow */
+    --switch-off-background: 215 28% 47%; /* Grayish Blue */
+  }
+
+  .high-contrast {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 60 95% 50%; /* Bright Yellow */
+    --primary-foreground: 0 0% 0%;
+ 
+    --secondary: 0 0% 80%;
+    --secondary-foreground: 0 0% 0%;
+ 
+    --muted: 0 0% 30%;
+    --muted-foreground: 0 0% 85%;
+ 
+    --accent: 200 100% 50%; /* Bright Cyan */
+    --accent-foreground: 0 0% 0%;
+ 
+    --destructive: 0 100% 50%; /* Bright Red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 50%;
+    --input: 0 0% 15%;
+    --ring: 60 95% 50%;
+
+    --switch-on-background: 60 95% 50%; /* Bright Yellow */
+    --switch-off-background: 0 0% 50%; /* Gray */
+  }
+}
+ 
+@layer base {
+>>>>>>> Stashed changes
   * {
     @apply border-border;
   }

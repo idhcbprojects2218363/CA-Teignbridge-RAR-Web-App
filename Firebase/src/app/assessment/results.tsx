@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -10,18 +10,55 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, CheckCircle2 } from "lucide-react";
+import { Calendar, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+function SuccessView({ submissionId }: { submissionId: string | null }) {
+    return (
+        <Alert className="mt-6 text-left border-2 border-primary">
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertTitle className="font-bold text-lg">Your Submission ID</AlertTitle>
+          <AlertDescription>
+            <p>Please make a note of this ID for your records. You may need to quote it if you communicate with the IT Manager.</p>
+            <p className="font-mono text-base font-bold text-primary mt-2 break-all">
+              {submissionId || 'ID-GENERATING...'}
+            </p>
+          </AlertDescription>
+        </Alert>
+    );
+}
+
+function ErrorView({ error }: { error: string | null }) {
+    return (
+        <Alert variant="destructive" className="mt-6 text-left border-2">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle className="font-bold text-lg">Submission Failed</AlertTitle>
+          <AlertDescription>
+            <p>We were unable to process your application due to an error. Please contact the IT Manager and provide the following error message:</p>
+            <p className="font-mono text-base font-bold mt-2 break-all">
+              {error || 'An unknown error occurred.'}
+            </p>
+          </AlertDescription>
+        </Alert>
+    );
+}
 
 export default function AssessmentResults() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const submissionId = searchParams.get("submissionId");
+  const error = searchParams.get("error");
 
   return (
     <div className="space-y-8">
       <div className="text-center">
         <h1 className="font-headline text-3xl font-bold tracking-tight text-primary sm:text-4xl">
-            Thank You! Your RAR Application Has Been Submitted.
+            {error ? "There Was a Problem" : "Thank You! Your RAR Application Has Been Submitted."}
         </h1>
-        <p className="mt-4 text-lg text-card-foreground">
+        
+        {error ? <ErrorView error={error} /> : <SuccessView submissionId={submissionId} />}
+
+        <p className="mt-6 text-lg text-card-foreground">
              Thank you for completing the "Read, Apply, Review" (RAR) process application. Your dedication to helping LCA Teignbridge with its Cyber Essentials (CE) certification is vital for ensuring collective security, which ultimately benefits our clients.
         </p>
          <p className="mt-4 text-lg text-card-foreground">
@@ -29,7 +66,7 @@ export default function AssessmentResults() {
         </p>
       </div>
 
-      <Card className="bg-blue-50 border-2 border-primary">
+      <Card className="border-2 border-primary">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl font-headline text-primary"><CheckCircle2 className="text-green-500 h-6 w-6"/>The Review Process</CardTitle>
         </CardHeader>
@@ -42,7 +79,7 @@ export default function AssessmentResults() {
                     <strong>One-to-One Appointment:</strong> If you requested assistance on the form, please use the self-service booking link below to schedule your consultation with the IT Manager.
                 </li>
                 <li>
-                    <strong>Periodic Spot Checks:</strong> As part of ongoing compliance requirements, your application and device may undergo periodic spot checks (annually or biannually) by the IT Manager or an external auditor.
+                    <strong>Periodic Spot Checks:</strong> As part of ongoing compliance requirements, your application and device may undergo periodic spot checks “bi-weekly, monthly or quarterly” by the IT Manager.
                 </li>
                  <li>
                     <strong>Working Together:</strong> By collaborating more closely with you to find solutions if your device becomes non-compliant or is at risk, we can ensure our commitment to protecting LCA Teignbridge while delivering the best possible service for our clients.
@@ -60,7 +97,7 @@ export default function AssessmentResults() {
         </CardContent>
       </Card>
     
-      <Card className="bg-blue-50 border-2 border-primary">
+      <Card className="border-2 border-primary">
           <CardHeader className="items-center">
               <CardTitle className="flex items-center gap-2 text-xl font-headline text-primary"><Calendar /> Schedule Your 1-to-1</CardTitle>
           </CardHeader>
@@ -77,7 +114,7 @@ export default function AssessmentResults() {
           </CardContent>
       </Card>
       
-      <Card className="bg-blue-50 border-2 border-primary">
+      <Card className="border-2 border-primary">
         <CardContent className="text-center space-y-4 p-6">
             <div className="bg-yellow-50 border-yellow-400 border-2 p-4 rounded-md">
                 <p className="font-bold text-red-700">
