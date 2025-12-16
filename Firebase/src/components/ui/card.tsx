@@ -9,11 +9,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-<<<<<<< Updated upstream
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-=======
       "rounded-custom border bg-card text-card-foreground shadow-sm flex flex-col",
->>>>>>> Stashed changes
       className
     )}
     {...props}

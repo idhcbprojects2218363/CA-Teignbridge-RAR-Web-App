@@ -4,12 +4,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import Image from 'next/image';
 import Link from 'next/link';
-<<<<<<< Updated upstream
-import Script from 'next/script';
-=======
 import { AccessibilityProvider } from '@/components/accessibility/accessibility-provider';
 import AccessibilityToolbar from '@/components/accessibility/accessibility-toolbar';
->>>>>>> Stashed changes
 
 export const metadata: Metadata = {
   title: 'RAR Application Form',
@@ -26,17 +22,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-<<<<<<< Updated upstream
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        {siteKey && (
-          <Script 
-            src={`https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`}
-            strategy="beforeInteractive"
-          />
-        )}
-=======
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
->>>>>>> Stashed changes
       </head>
       <body className="font-body antialiased">
         <AccessibilityProvider>

@@ -11,31 +11,18 @@ const IT_MANAGER_EMAIL = "your-it-manager-email@example.com"; // Replace with IT
 >>>>>>> Stashed changes
 
 const HEADERS = [
-<<<<<<< Updated upstream
-  'Submission_Timestamp_ISO', 'Response_Due_Date_ISO', 'IP_Address', 'Full_Name',
-  'CA_Email', 'Contact_Email', 'Contact_Number', 'Preferred_Contact_Method',
-=======
   'Submission_ID', 'Submission_Timestamp_ISO', 'Response_Due_Date_ISO', 'IP_Address', 'Full_Name',
   'Contact_Email', 'Receive_Copy', 'Contact_Number', 'Preferred_Contact_Method',
->>>>>>> Stashed changes
   'Reason_for_BYOD', 'Device_Type', 'Device_Count', 'Device_Model_Name',
   'OS_and_Version', 'Web_Browser_and_Version', 'Malware_Protection_Software',
   'Email_Client_Used', 'Office_Apps_Used', 'Other_Cloud_Services', 'MFA_On_Cloud_Services',
-  'Software_Firewall_Assurance',
-  'Uninstall_Unused_Apps', 'Remove_Unused_Accounts', 'Strong_Passwords_MFA_Assurance',
-<<<<<<< Updated upstream
-  'Device_Lock_Assurance', 'Separate_User_Account_Assurance', 'Update_Devices',
-  'Supported_Licensed', 'In_Scope', 'Automatic_Updates', 'Anti_Malware_All',
-  'Antimalware_Updates', 'Antimalware_Scans', 'Antimalware_Web_Protection',
-  'Personalised_Help', 'Comments_Feedback', 'Acknowledge_Policy_Compliance',
-  'Acknowledge_Security_Risks', 'Acknowledge_Security_Measures'
-=======
-  'Device_Lock_Assurance', 'Separate_User_Account_Assurance', 'Official_App_Stores_Assurance',
-  'AutoRun_Disabled_Assurance', 'Update_Devices', 'Supported_Licensed', 'In_Scope', 'Automatic_Updates',
-  'Anti_Malware_All', 'Antimalware_Updates', 'Antimalware_Scans',
-  'Antimalware_Web_Protection', 'Personalised_Help', 'Comments_Feedback',
-  'Acknowledge_Policy_Compliance', 'Acknowledge_Security_Risks', 'Acknowledge_Security_Measures'
->>>>>>> Stashed changes
+  'Software_Firewall_Assurance', 'Uninstall_Unused_Apps', 'Remove_Unused_Accounts',
+  'Strong_Passwords_MFA_Assurance', 'Device_Lock_Assurance', 'Separate_User_Account_Assurance',
+  'Official_App_Stores_Assurance', 'AutoRun_Disabled_Assurance', 'Update_Devices',
+  'Supported_Licensed', 'In_Scope', 'Automatic_updates', 'Anti_Malware_All', 'Antimalware_Updates',
+  'Antimalware_Scans', 'Antimalware_Web_Protection', 'Personalised_Help',
+  'Comments_Feedback', 'Acknowledge_Policy_Compliance', 'Acknowledge_Security_Risks',
+  'Acknowledge_Security_Measures'
 ];
 
 
@@ -51,27 +38,6 @@ function onOpen() {
     .addToUi();
 }
 
-<<<<<<< Updated upstream
-/**
- * Sets up the "RARresponses" sheet and validates/writes the required headers.
- * This function is callable from the custom "BYOD Admin" menu.
- */
-function setupHeaders() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = spreadsheet.getSheetByName(SHEET_NAME);
-
-  if (!sheet) {
-    sheet = spreadsheet.insertSheet(SHEET_NAME);
-    SpreadsheetApp.getUi().alert(`Sheet "${SHEET_NAME}" was created.`);
-  }
-
-  const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
-  const currentHeaders = headerRange.getValues()[0];
-
-  let needsUpdate = false;
-  if (currentHeaders.length !== HEADERS.length) {
-    needsUpdate = true;
-=======
 
 /**
  * Sets up the sheet by populating any empty cells in the header row.
@@ -79,7 +45,7 @@ function setupHeaders() {
  */
 function setupSheet() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  const headerRange = sheet.getRange(1, 1, 1, sheet.getMaxColumns());
+  const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
   const headerValues = headerRange.getValues()[0];
   let updated = false;
 
@@ -92,7 +58,6 @@ function setupSheet() {
 
   if (updated) {
     SpreadsheetApp.getUi().alert('Sheet headers have been updated successfully.');
->>>>>>> Stashed changes
   } else {
     SpreadsheetApp.getUi().alert('Headers already seem to be in place. No changes made.');
   }
@@ -107,76 +72,58 @@ function verifySheetHeaders() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const ui = SpreadsheetApp.getUi();
 
+  if (!sheet) {
+    ui.alert(`Sheet with name "${SHEET_NAME}" not found.`);
+    return;
+  }
+  
   const lastColumn = sheet.getLastColumn();
   const actualHeaders = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
-
+  
   let mismatches = [];
-  let scriptIndex = 0;
-  let sheetIndex = 0;
+  const actualHeadersSet = new Set(actualHeaders.filter(h => h)); // Filter out empty cells
 
-  while (scriptIndex < HEADERS.length || sheetIndex < actualHeaders.length) {
-    const expected = HEADERS[scriptIndex];
-    const actual = actualHeaders[sheetIndex];
-
-    if (expected === actual) {
-      // Headers match, advance both pointers
-      scriptIndex++;
-      sheetIndex++;
-    } else {
-      // Headers do not match
-      const mismatchMessage = 
-        `Mismatch at Column ${String.fromCharCode(65 + sheetIndex)}:\n` +
-        `  - Expected: "${expected || '[End of Script Headers]'}"\n` +
-        `  - Found: "${actual || '[End of Sheet Headers]'}"`;
-      mismatches.push(mismatchMessage);
-
-      // Check if the expected header exists later in the sheet
-      const foundIndex = actualHeaders.indexOf(expected, sheetIndex + 1);
-      
-      if (foundIndex !== -1) {
-        // Found the expected header later, implies missing columns in between.
-        // We advance the scriptIndex and let the loop continue checking the sheet columns
-        // against the next expected headers. This correctly identifies renamed columns.
-         scriptIndex++;
-      } else {
-        // Could not find the expected header later in the sheet.
-        // This could mean a renamed column or an extra column in the sheet.
-        // Advance both to prevent an infinite loop.
-        scriptIndex++;
-        sheetIndex++;
-      }
+  // Check for missing headers in the sheet
+  for (let i = 0; i < HEADERS.length; i++) {
+    const expectedHeader = HEADERS[i];
+    if (!actualHeadersSet.has(expectedHeader)) {
+      mismatches.push(`Missing column in Sheet: "${expectedHeader}"`);
     }
   }
 
-<<<<<<< Updated upstream
-  if (needsUpdate) {
-    headerRange.setValues([HEADERS]);
-    SpreadsheetApp.getUi().alert(`Headers have been set successfully in "${SHEET_NAME}".`);
-  } else {
-    SpreadsheetApp.getUi().alert(`Headers in "${SHEET_NAME}" are already correct.`);
+  // Check for headers in the sheet that are not in the script
+  const expectedHeadersSet = new Set(HEADERS);
+  for (let i = 0; i < actualHeaders.length; i++) {
+    const actualHeader = actualHeaders[i];
+    if (actualHeader && !expectedHeadersSet.has(actualHeader)) {
+        mismatches.push(`Unexpected column in Sheet at column ${String.fromCharCode(65 + i)}: "${actualHeader}"`);
+    }
   }
-}
 
-// --- EMAIL FUNCTIONS ---
+  // Check for order mismatches (only up to the length of the shorter array to avoid out-of-bounds)
+  const checkLength = Math.min(HEADERS.length, actualHeaders.length);
+  for(let i = 0; i < checkLength; i++) {
+    const expected = HEADERS[i];
+    const actual = actualHeaders[i];
+    if (actual && actual !== expected) {
+      mismatches.push(`Order mismatch at Column ${String.fromCharCode(65 + i)}: Expected "${expected}", Found "${actual}"`);
+    }
+  }
 
-/**
- * Sends a confirmation email to the applicant.
- * @param {object} data - The parsed JSON data from the form submission.
- */
-function sendApplicantEmail(data) {
-  const applicantEmail = data.CA_Email || data.Contact_Email;
-  if (!applicantEmail) {
-    console.error('No applicant email found (neither CA_Email nor Contact_Email was provided).');
-=======
-  if (mismatches.length > 0) {
+
+  // Remove duplicate messages before alerting
+  const uniqueMismatches = [...new Set(mismatches)];
+
+  if (uniqueMismatches.length > 0) {
     let message = 'Header verification found mismatches!\n\n' +
-                  'Please review the list below. For each mismatch, you may need to insert a new column to the left of the specified column. After making corrections, rerun this verification.\n\n' +
-                  mismatches.join('\n\n');
+                  'Please review the list below. You may need to add, remove, or reorder columns in your sheet to match the script.\n\n' +
+                  uniqueMismatches.join('\n\n');
     ui.alert('Header Mismatch', message, ui.ButtonSet.OK);
   } else {
     ui.alert('Header verification successful! All columns match the script definition.');
   }
 }
+
 
 
 /**
@@ -196,7 +143,6 @@ function backfillSubmissionIDs() {
 
   if (idColIndex === -1 || timestampColIndex === -1) {
     ui.alert('Error: Could not find "Submission_ID" or "Submission_Timestamp_ISO" columns.');
->>>>>>> Stashed changes
     return;
   }
 
@@ -243,17 +189,7 @@ function doPost(e) {
   try {
     lock.waitLock(30000);
 
-<<<<<<< Updated upstream
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = spreadsheet.getSheetByName(SHEET_NAME);
-
-    if (!sheet) {
-      setupHeaders();
-      sheet = spreadsheet.getSheetByName(SHEET_NAME);
-    }
-=======
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
->>>>>>> Stashed changes
     
     // The data from the Next.js server action will be in a JSON string in the post body.
     const submissionData = JSON.parse(e.postData.contents);
@@ -264,17 +200,11 @@ function doPost(e) {
     // Append the new row to the sheet
     sheet.appendRow(rowData);
     
-<<<<<<< Updated upstream
-    // Send emails after data has been written successfully
-    sendApplicantEmail(data);
-    sendITManagerEmail(data);
-=======
     // Trigger the emails with the received data
     if (submissionData.Receive_Copy) {
       sendApplicantEmail(submissionData);
     }
     sendITManagerEmail(submissionData);
->>>>>>> Stashed changes
 
     // Return a success response
     return ContentService.createTextOutput(JSON.stringify({ 'result': 'success' }))
@@ -309,19 +239,22 @@ function sendApplicantEmail(data) {
     <ul>
   `;
 
-  for (const key in data) {
-    // Only include fields that have a value and are part of the headers.
-    if (data[key] && HEADERS.includes(key)) {
-      body += `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${data[key]}</li>`;
+  // Iterate over the HEADERS array to ensure all fields are included in order.
+  HEADERS.forEach(header => {
+    // Check if the data object has this property and it's not empty or null.
+    if (data[header]) {
+      // Replace underscores with spaces for readability in the email.
+      const formattedHeader = header.replace(/_/g, ' ');
+      body += `<li><strong>${formattedHeader}:</strong> ${data[header]}</li>`;
     }
-  }
+  });
   
   body += `
     </ul>
     <p><strong>What's Next?</strong></p>
     <p>The IT Manager will review your application. If you requested personalised help, please ensure you book a 1-to-1 appointment using the link on the submission confirmation page.</p>
     <p>If you missed the booking link, or if you selected "No" for help but have changed your mind, please refer to the document below for guidance on next steps.</p>
-    <p><strong>Read Now:</strong> <a href="https://YOUR_AFTER_SUBMISSION_FAQ_DOCUMENT">What to do After your submission</a></p>
+    <p><strong>Read Now:</strong> <a href="">What to do After your submission</a></p>
     <p>Thank you for your cooperation.</p>
     <p>LCA Teignbridge IT</p>
   `;
@@ -352,11 +285,15 @@ function sendITManagerEmail(data) {
     <ul>
   `;
 
-  for (const key in data) {
-     if (data[key] && HEADERS.includes(key)) {
-      body += `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${data[key]}</li>`;
+  // Iterate over the HEADERS array to ensure all fields are included in order.
+  HEADERS.forEach(header => {
+    // Check if the data object has this property and it's not empty or null.
+    if (data[header]) {
+       // Replace underscores with spaces for readability in the email.
+      const formattedHeader = header.replace(/_/g, ' ');
+      body += `<li><strong>${formattedHeader}:</strong> ${data[header]}</li>`;
     }
-  }
+  });
 
    body += `</ul>`;
 
@@ -364,7 +301,3 @@ function sendITManagerEmail(data) {
     htmlBody: body,
   });
 }
-
-    
-
-    

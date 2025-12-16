@@ -11,15 +11,10 @@ export default function LandingPage() {
         <h1 className="font-headline text-3xl font-bold tracking-tight text-primary sm:text-4xl">
           LCA Teignbridge's formal "Read, Apply, Review" (RAR) process for BYOD usage
         </h1>
-<<<<<<< Updated upstream
-        <p className="mt-6 text-lg text-black">
-          Welcome and thank you for visiting this introduction page.
-=======
         <p className="mt-6 text-lg text-foreground">
           Welcome and thank you for visiting.
->>>>>>> Stashed changes
           <br />
-          Before you fill out the form please read the following guidance.
+          Before you fill out the form, please read the guidance cards below the following button
         </p>
         <div className="mt-10">
           <Button asChild size="lg" className="font-bold text-lg">
@@ -36,14 +31,6 @@ export default function LandingPage() {
               Guidance for Using the Form
             </CardTitle>
           </CardHeader>
-<<<<<<< Updated upstream
-          <CardContent>
-            <p className="text-black">
-              Guidance on the circumstances under which you should complete the RAR for BYOD form.
-            </p>
-            <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="" target="_blank" rel="noopener noreferrer">Read the Guidance</a>
-=======
           <CardContent className="flex flex-col">
             <p>
               Guidance on the circumstances under which you should complete the RAR form.
@@ -59,7 +46,6 @@ export default function LandingPage() {
             </Button>
             <Button variant="link" className="px-0 pt-2 text-base justify-start" asChild>
                 <a href="https://docs.google.com/document/d/1Sh1-Sb9qsasVIAgg0BAtRf-e5qYxq1-Ck4NY86LIjTM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">View Use-Case Scenarios</a>
->>>>>>> Stashed changes
             </Button>
           </CardContent>
         </Card>
@@ -75,14 +61,10 @@ export default function LandingPage() {
               Understand the importance of the RAR process, why we ask specific questions, and what data we collect.
             </p>
              <Button variant="link" className="px-0 pt-4 text-base" asChild>
-<<<<<<< Updated upstream
-                <a href="" target="_blank" rel="noopener noreferrer">Learn More</a>
-=======
                 <a href="https://docs.google.com/document/d/1v1lHiZv1lXcC_iPISWoI3lk9aGJArWMvSGucME-xzRk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Learn about the RAR process</a>
             </Button>
             <Button variant="link" className="px-0 pt-2 text-base" asChild>
                 <a href="https://docs.google.com/document/d/1B8agUZJWDIQXdiNhSDQl33xvhcMKK7FiRulOsy-6kko/edit?tab=t.0" target="_blank" rel="noopener noreferrer">Read our "RAR" Data & Privacy Notice</a>
->>>>>>> Stashed changes
             </Button>
           </CardContent>
         </Card>
@@ -98,7 +80,7 @@ export default function LandingPage() {
               Find out about the next steps, what to expect, and how to get help after you have submitted the form.
             </p>
             <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="" target="_blank" rel="noopener noreferrer">See Next Steps</a>
+                <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">See Next Steps</a>
             </Button>
           </CardContent>
         </Card>

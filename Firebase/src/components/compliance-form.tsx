@@ -5,11 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { formSchema, type FormSchema } from "@/lib/form-schema";
-<<<<<<< Updated upstream
-=======
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
->>>>>>> Stashed changes
 
 import { Button } from "@/components/ui/button";
 import {
@@ -59,17 +56,10 @@ import {
 } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Checkbox } from "./ui/checkbox";
-<<<<<<< Updated upstream
-
-const totalSteps = 5;
-
-// Make grecaptcha available in the window object
-=======
 import { Switch } from "./ui/switch";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Script from "next/script";
 
->>>>>>> Stashed changes
 declare global {
   interface Window {
     onRecaptchaLoad: () => void;
@@ -83,13 +73,10 @@ declare global {
   }
 }
 
-<<<<<<< Updated upstream
-=======
 const totalSteps = 6;
 const LOCAL_STORAGE_KEY = 'complianceFormData';
 
 
->>>>>>> Stashed changes
 const MandatoryLabel = ({ children }: { children: React.ReactNode }) => (
   <FormLabel className="font-bold">
     {children} <span className="text-destructive dark:text-yellow-400 [.high-contrast_&]:text-primary">*</span>
@@ -143,52 +130,6 @@ const defaultFormValues: Partial<FormSchema> = {
 export default function ComplianceForm() {
   const [currentStep, setCurrentStep] = React.useState(1);
   const [isLoading, setIsLoading] = React.useState(false);
-<<<<<<< Updated upstream
-  const router = useRouter();
-  const { toast } = useToast();
-  const [submissionTime, setSubmissionTime] = React.useState<Date | null>(null);
-
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      Full_Name: "",
-      CA_Email: "",
-      Contact_Email: "",
-      Contact_Number: "",
-      Preferred_Contact_Method: undefined,
-      Reason_for_BYOD: "",
-      Device_Type: undefined,
-      Device_Count: 1,
-      Device_Model_Name: "",
-      OS_and_Version: "",
-      Web_Browser_and_Version: "",
-      Malware_Protection_Software: "",
-      Email_Client_Used: "",
-      Office_Apps_Used: "",
-      Software_Firewall_Assurance: undefined,
-      Uninstall_Unused_Apps: undefined,
-      Remove_Unused_Accounts: undefined,
-      Strong_Passwords_MFA_Assurance: undefined,
-      Device_Lock_Assurance: undefined,
-      Separate_User_Account_Assurance: undefined,
-      Update_Devices: undefined,
-      Supported_Licensed: undefined,
-      In_Scope: undefined,
-      Automatic_Updates: undefined,
-      Anti_Malware_All: undefined,
-      Antimalware_Updates: undefined,
-      Antimalware_Scans: undefined,
-      Antimalware_Web_Protection: undefined,
-      Personalised_Help: undefined,
-      Comments_Feedback: "",
-      Acknowledge_Policy_Compliance: false,
-      Acknowledge_Security_Risks: false,
-      Acknowledge_Security_Measures: false,
-      IP_Address: "..."
-    },
-  });
-
-=======
   const [clientLoaded, setClientLoaded] = React.useState(false);
   const [recaptchaLoaded, setRecaptchaLoaded] = React.useState(false);
   const recaptchaWidgetRef = React.useRef<string | null>(null);
@@ -307,7 +248,6 @@ export default function ComplianceForm() {
   }, [form, currentStep]);
 
 
->>>>>>> Stashed changes
   React.useEffect(() => {
     const fetchIp = async () => {
       try {
@@ -323,27 +263,22 @@ export default function ComplianceForm() {
     fetchIp();
   }, [form]);
 
-  const watchedDeviceType = form.watch("Device_Type");
   const watchedDeviceCount = form.watch("Device_Count");
-  const caEmail = form.watch("CA_Email");
   const contactEmail = form.watch("Contact_Email");
   const contactNumber = form.watch("Contact_Number");
   const recaptchaToken = form.watch("recaptchaToken");
 
   type FieldName = keyof FormSchema;
 
-  const personalFields: FieldName[] = ["Full_Name", "CA_Email", "Contact_Email", "Contact_Number", "Preferred_Contact_Method"];
+  const personalFields: FieldName[] = ["Full_Name", "Contact_Email", "Receive_Copy", "Contact_Number", "Preferred_Contact_Method"];
   const deviceFields: FieldName[] = ["Reason_for_BYOD", "Device_Type", "Device_Count", "Device_Model_Name", "OS_and_Version", "Web_Browser_and_Version"];
   const softwareFields: FieldName[] = ["Malware_Protection_Software", "Email_Client_Used", "Office_Apps_Used", "Other_Cloud_Services", "MFA_On_Cloud_Services"];
   const securityFields: FieldName[] = [
     "Software_Firewall_Assurance", "Uninstall_Unused_Apps", "Remove_Unused_Accounts",
     "Strong_Passwords_MFA_Assurance", "Device_Lock_Assurance", "Separate_User_Account_Assurance",
-<<<<<<< Updated upstream
-=======
     "Official_App_Stores_Assurance", "AutoRun_Disabled_Assurance",
   ];
   const updateFields: FieldName[] = [
->>>>>>> Stashed changes
     "Update_Devices", "Supported_Licensed", "In_Scope", "Automatic_Updates", "Anti_Malware_All",
     "Antimalware_Updates", "Antimalware_Scans", "Antimalware_Web_Protection"
   ];
@@ -361,16 +296,6 @@ export default function ComplianceForm() {
     if (currentStep === 1) fieldsToValidate = personalFields;
     if (currentStep === 2) fieldsToValidate = deviceFields;
     if (currentStep === 3) fieldsToValidate = softwareFields;
-<<<<<<< Updated upstream
-    if (currentStep === 4) {
-      fieldsToValidate = [...securityFields];
-      if (watchedDeviceType !== 'computer (desktop or laptop)') {
-         fieldsToValidate = fieldsToValidate.filter(f => f !== 'Separate_User_Account_Assurance');
-      }
-    }
-    if (currentStep === 5) fieldsToValidate = finalFields;
-
-=======
     if (currentStep === 4) fieldsToValidate = securityFields;
     if (currentStep === 5) fieldsToValidate = updateFields;
     
@@ -381,79 +306,29 @@ export default function ComplianceForm() {
       }
       return; 
     }
->>>>>>> Stashed changes
 
     const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
       if (watchedDeviceCount > 1 && currentStep === 2) {
-<<<<<<< Updated upstream
-        // Do not proceed if device count is more than 1
-=======
         toast({
           variant: "destructive",
           title: "Multiple Devices Detected",
           description: "Please submit a separate application for each device. Change the device count to 1 to continue.",
         });
->>>>>>> Stashed changes
         return;
       }
       if (currentStep < totalSteps) {
         setCurrentStep((prev) => prev + 1);
-      } else {
-        // This is the final step, trigger the form submission
-        await form.handleSubmit(onSubmit)();
       }
     }
   };
 
   const prevStep = () => {
-    setCurrentStep((prev) => prev - 1);
+     if (currentStep > 1) {
+        setCurrentStep((prev) => prev - 1);
+    }
   };
 
-<<<<<<< Updated upstream
-  const onSubmit = (data: FormSchema) => {
-    setIsLoading(true);
-    setSubmissionTime(new Date());
-
-    if (!window.grecaptcha || !window.grecaptcha.enterprise) {
-      console.error("reCAPTCHA enterprise script not loaded");
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Could not verify you are human. Please reload the page and try again.",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-    if (!siteKey) {
-        console.error("reCAPTCHA site key not found in environment variables.");
-        setIsLoading(false);
-        return;
-    }
-    
-    window.grecaptcha.enterprise.ready(async () => {
-      try {
-        const token = await window.grecaptcha.enterprise.execute(siteKey, { action: 'submit' });
-        const result = await handleComplianceCheck(data, token);
-        if (result.success) {
-          router.push("/assessment");
-        } else {
-          throw new Error(result.error || "An unknown error occurred.");
-        }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Submission failed. Please try again.";
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: errorMessage,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    });
-=======
   const onSubmit = async (data: FormSchema) => {
     setIsLoading(true);
     setSubmissionTime(new Date());
@@ -472,7 +347,6 @@ export default function ComplianceForm() {
     }
 
     // Don't set loading to false here, as we are navigating away.
->>>>>>> Stashed changes
   };
 
 
@@ -480,11 +354,13 @@ export default function ComplianceForm() {
     1: "Your Details",
     2: "Your Device",
     3: "Software Setup",
-    4: "Security Measures",
-    5: "Final Thoughts & Consent"
+    4: "Security Assurances",
+    5: "Updates & Anti-Malware",
+    6: "Final Thoughts & Consent",
+    7: "Submit"
   };
 
-  const renderRadioGroup = (name: FieldName, options: string[]) => (
+  const renderRadioGroup = (name: FieldName, options: string[], disabled = false) => (
     <FormField
       control={form.control}
       name={name}
@@ -494,19 +370,18 @@ export default function ComplianceForm() {
             <RadioGroup
               onValueChange={field.onChange}
               value={String(field.value ?? "")}
-<<<<<<< Updated upstream
-              className={`grid grid-cols-2 md:grid-cols-3 gap-2`}
-=======
               className={`grid grid-cols-2 md:grid-cols-4 gap-2`}
               disabled={disabled}
->>>>>>> Stashed changes
             >
               {options.map((option) => (
                 <FormItem key={option}>
                   <FormControl>
                     <RadioGroupItem value={option} id={`${name.toString()}-${option}`} className="peer sr-only" />
                   </FormControl>
-                  <FormLabel htmlFor={`${name.toString()}-${option}`} className="block w-full cursor-pointer rounded-md border-2 border-primary bg-transparent p-3 text-center text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-ring">
+                  <FormLabel htmlFor={`${name.toString()}-${option}`} className={cn(
+                    "block w-full cursor-pointer rounded-custom border-2 border-primary bg-transparent p-3 text-center text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-ring",
+                    disabled && "cursor-not-allowed opacity-50 bg-muted hover:bg-muted peer-data-[state=checked]:bg-muted peer-data-[state=checked]:text-muted-foreground"
+                    )}>
                     {option}
                   </FormLabel>
                 </FormItem>
@@ -519,131 +394,6 @@ export default function ComplianceForm() {
     />
   );
   
-<<<<<<< Updated upstream
-  return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center text-lg">
-          <span className="font-bold text-foreground">Step {currentStep} of {totalSteps}</span>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
-          <span className="font-bold text-primary">{stepDescriptions[currentStep]}</span>
-        </div>
-        <Progress value={(currentStep / totalSteps) * 100} className="mt-2" />
-        {(currentStep === 2 || currentStep === 3) && (
-          <p className="pt-4 text-sm text-black">If a question does not apply please type none or N/A.</p>
-        )}
-        {currentStep === 4 && (
-          <div className="pt-4 space-y-2">
-            <p className="text-sm text-black">
-              Please indicate your willingness to cooperate on the following security areas. Please select 'Yes' or 'No' for each point.
-            </p>
-            <div className="flex items-start gap-x-2 rounded-md border border-red-700 bg-yellow-400 p-3 text-sm text-red-800">
-                <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0 text-red-700" />
-                <p>
-                  <strong className="font-bold">Important:</strong> You are within your right to answer No or N/A but doing so may cause the approval of your application to be delayed.
-                </p>
-            </div>
-          </div>
-        )}
-      </CardHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-6">
-            <input type="hidden" {...form.register("IP_Address")} />
-
-            {currentStep === 1 && (
-              <div className="space-y-4">
-                <FormField control={form.control} name="Full_Name" render={({ field }) => (
-                  <FormItem>
-                    <MandatoryLabel>Full Name</MandatoryLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="John Doe" {...field} className="pl-10"/>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="CA_Email" render={({ field }) => (
-                  <FormItem>
-                    <MandatoryLabel>CA Email</MandatoryLabel>
-                     <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input type="email" placeholder="user@company.com" {...field} className="pl-10"/>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="Contact_Email" render={({ field }) => (
-                  <FormItem>
-                    <MandatoryLabel>Contact Email</MandatoryLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input type="email" placeholder="personal@example.com" {...field} className="pl-10" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="Contact_Number" render={({ field }) => (
-                  <FormItem>
-                    <MandatoryLabel>Contact Number</MandatoryLabel>
-                    <FormControl>
-                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="e.g., 07123 456789" {...field} className="pl-10" />
-                       </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="Preferred_Contact_Method" render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <MandatoryLabel>Preferred Contact Method</MandatoryLabel>
-                    <FormControl>
-                      <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                        {[
-                          { value: "CA_Email", label: `CA Email ${caEmail ? `(${caEmail})` : ''}` },
-                          { value: "Contact_Email", label: `Contact Email ${contactEmail ? `(${contactEmail})` : ''}` },
-                          { value: "Contact_Number", label: `Contact Number ${contactNumber ? `(${contactNumber})` : ''}` }
-                        ].map(option => (
-                           <FormItem key={option.value}>
-                             <FormControl>
-                               <RadioGroupItem value={option.value} id={`preferred-${option.value}`} className="peer sr-only"/>
-                             </FormControl>
-                             <FormLabel htmlFor={`preferred-${option.value}`} className="block w-full cursor-pointer rounded-md border-2 border-primary bg-transparent p-3 text-center text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-ring">
-                               {option.label}
-                             </FormLabel>
-                           </FormItem>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-            )}
-            
-            {currentStep === 2 && (
-              <div className="space-y-4">
-                 <FormField control={form.control} name="Reason_for_BYOD" render={({ field }) => (
-                  <FormItem>
-                    <MandatoryLabel>Reason for using personal device</MandatoryLabel>
-                    <FormControl>
-                      <Textarea placeholder="Describe why you need to use your personal device for work..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="Device_Type" render={({ field }) => (
-                  <FormItem>
-                    <MandatoryLabel>Device Type</MandatoryLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-=======
   const now = new Date();
 
   if (!clientLoaded) {
@@ -682,7 +432,7 @@ export default function ComplianceForm() {
                   <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   <span className="font-bold text-primary">{stepDescriptions[currentStep]}</span>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => clearForm(true)}>
+                <Button type="button" variant="outline" size="sm" onClick={() => clearForm(true)}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Clear Form
                 </Button>
@@ -763,7 +513,6 @@ export default function ComplianceForm() {
                   <FormField control={form.control} name="Contact_Email" render={({ field }) => (
                     <FormItem>
                       <MandatoryLabel>Contact Email</MandatoryLabel>
->>>>>>> Stashed changes
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1056,46 +805,8 @@ export default function ComplianceForm() {
 
               {currentStep === 6 && (
                 <div className="space-y-6">
-<<<<<<< Updated upstream
-                    <div>
-                        <h3 className="font-semibold text-lg mb-4">Security measures - guarantees "Assurances"</h3>
-                        <div className="grid grid-cols-1 gap-6">
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that you have not disabled your software firewall:*</MandatoryLabel> {renderRadioGroup("Software_Firewall_Assurance", ["Yes", "No", "N/A"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that once you no longer need an App or Software, you uninstall it from your device:*</MandatoryLabel> {renderRadioGroup("Uninstall_Unused_Apps", ["Yes", "No"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that you only have the accounts you need on your device and no more. Any accounts which are no longer used should ideally be removed from the device:*</MandatoryLabel> {renderRadioGroup("Remove_Unused_Accounts", ["Yes", "No"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that on your device (e.g. mobile devices) or user accounts (e.g. computer) are protected using "strong passwords (possibly 12 characters long), 6-digit pin, MFA", or other appropriate alternatives:*</MandatoryLabel> {renderRadioGroup("Strong_Passwords_MFA_Assurance", ["Yes", "No"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that your device locks when left idle for long enough, may run a screen saver, and requires a password, pin or biometric to unlock:*</MandatoryLabel> {renderRadioGroup("Device_Lock_Assurance", ["Yes", "No"])} </FormItem>
-                            {watchedDeviceType === 'computer (desktop or laptop)' && <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that you will create a separate user account or profile on your device for LCA Teignbridge work (keeps your personal information private and isolated):*</MandatoryLabel> {renderRadioGroup("Separate_User_Account_Assurance", ["Yes", "No", "N/A"])} </FormItem>}
-                        </div>
-                    </div>
-                     <div>
-                        <h3 className="font-semibold text-lg mb-4">Updates and Unsupported (OS, Software, Apps, etc.) - guarantees "Assurances"</h3>
-                        <div className="grid grid-cols-1 gap-6">
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that you update your devices you use to do work for LCA Teignbrige:*</MandatoryLabel> {renderRadioGroup("Update_Devices", ["Yes", "No"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that everything on your device is supported by the manufacturer and licensed properly:*</MandatoryLabel> {renderRadioGroup("Supported_Licensed", ["Yes", "No"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that your device and software are in "Scope" (Devices with Operating System and Software/Apps which are all getting updates and licensed):*</MandatoryLabel> {renderRadioGroup("In_Scope", ["Yes", "No"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that you do not turn off automatic updates, and check bi-weekly to see if this is working:*</MandatoryLabel> {renderRadioGroup("Automatic_Updates", ["Yes", "No"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that all of your devices have Anti-Malware protection where appropriate:*</MandatoryLabel> {renderRadioGroup("Anti_Malware_All", ["Yes", "No", "N/A"])} </FormItem>
-                            <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that your Anti-Mailware updates regularly in line with vendor guidelines:*</MandatoryLabel> {renderRadioGroup("Antimalware_Updates", ["Yes", "No", "N/A"])} </FormItem>
-                             <FormItem> <MandatoryLabel>Regular anti-malware scans? (e.g. Manual scans as well as leaving Real Time protection is turned on) *</MandatoryLabel> {renderRadioGroup("Antimalware_Scans", ["Yes", "No", "N/A"])} </FormItem>
-                             <FormItem> <MandatoryLabel>If you can, you will provide an assurance guarantee that your Anti-Mailware scans your web traffic and protects you from visiting malicious websites:*</MandatoryLabel> {renderRadioGroup("Antimalware_Web_Protection", ["Yes", "No", "N/A"])} </FormItem>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {currentStep === 5 && (
-              <div className="space-y-6">
-                 <p className="text-black">If you need one-to-one help with enabling BYOD, please register your request below. There is also a text box below to add your feedback or comments.</p>
-                <FormItem>
-                  <MandatoryLabel>Do you need personalised help for RAR/BYOD?</MandatoryLabel>
-                  {renderRadioGroup("Personalised_Help", ["Yes", "No"])}
-                </FormItem>
-                <FormField control={form.control} name="Comments_Feedback" render={({ field }) => (
-=======
                   <h3 className="font-semibold text-lg mb-4 text-primary">Additional Help, Feedback & Consents</h3>
                   <p className="text-foreground">If you need one-to-one help with enabling BYOD, please register your request below. There is also a text box below to add your feedback or comments.</p>
->>>>>>> Stashed changes
                   <FormItem>
                     <MandatoryLabel>Do you need personalised help for RAR/BYOD?</MandatoryLabel>
                     <FormField
@@ -1130,95 +841,6 @@ export default function ComplianceForm() {
                     </FormItem>
                   )} />
 
-<<<<<<< Updated upstream
-                <div className="space-y-4 pt-4">
-                  <h3 className="font-semibold text-lg">Consents & Acknowledgements</h3>
-                   <FormField
-                    control={form.control}
-                    name="Acknowledge_Policy_Compliance"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <MandatoryLabel>
-                            I agree to comply with the LCA Teignbridge's BYOD policy and guidelines.
-                          </MandatoryLabel>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="Acknowledge_Security_Risks"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <MandatoryLabel>
-                            I understand the security risks associated with using personal devices for work purposes.
-                          </MandatoryLabel>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="Acknowledge_Security_Measures"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <MandatoryLabel>
-                            I consent to any necessary security measures being implemented on my device.
-                          </MandatoryLabel>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                 {submissionTime && (
-                  <div className="space-y-4 rounded-lg border bg-muted/50 p-4">
-                    <h3 className="font-semibold text-muted-foreground">Submission Details (For IT Use):</h3>
-                    <Separator />
-                    <div className="space-y-2 text-sm">
-                      <p><strong>Current Date and time (submission):</strong> {submissionTime.toLocaleString()}</p>
-                      <p><strong>Initial Response No Later Than:</strong> {new Date(submissionTime.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleString()}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            {currentStep > 1 ? (
-              <Button type="button" variant="outline" onClick={prevStep}>
-                Back
-              </Button>
-            ) : <div />}
-            <Button type="button" onClick={nextStep} disabled={isLoading || (currentStep === 2 && watchedDeviceCount > 1)}>
-              {currentStep < totalSteps ? "Next" : (isLoading ? "Verifying..." : "Submit Your Application")}
-            </Button>
-          </CardFooter>
-=======
                   <div className="space-y-4 pt-4">
                     <h3 className="font-semibold text-lg mb-4 text-primary">Consents & Acknowledgements</h3>
                     
@@ -1325,7 +947,6 @@ export default function ComplianceForm() {
 
             </CardFooter>
           </Card>
->>>>>>> Stashed changes
         </form>
       </Form>
       
@@ -1352,5 +973,7 @@ export default function ComplianceForm() {
     </>
   );
 }
+
+    
 
     

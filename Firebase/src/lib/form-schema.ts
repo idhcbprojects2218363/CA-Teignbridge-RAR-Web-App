@@ -4,10 +4,10 @@ import { z } from "zod";
 export const formSchema = z.object({
   Submission_ID: z.string().optional(),
   Full_Name: z.string().min(2, "Full name must be at least 2 characters.").max(255),
-  CA_Email: z.string().email("Invalid email address.").max(255),
   Contact_Email: z.string().email("Invalid email address.").max(255),
+  Receive_Copy: z.boolean().optional(),
   Contact_Number: z.string().regex(/^(?:(?:\+44\s?|0)\d{2,4}\s?\d{3,4}\s?\d{3,4})$/, "Please enter a valid UK phone number."),
-  Preferred_Contact_Method: z.enum(['CA_Email', 'Contact_Email', 'Contact_Number'], { required_error: "Please select a preferred contact method." }),
+  Preferred_Contact_Method: z.enum(['Contact_Email', 'Contact_Number'], { required_error: "Please select a preferred contact method." }),
   Reason_for_BYOD: z.string().min(5, "Please provide a brief reason (min 5 characters)."),
   Device_Type: z.enum(['mobile devices (smartphone, tablet or hybrid)', 'computer (desktop or laptop)'], { required_error: "Please select a device type." }),
   Device_Count: z.coerce.number({required_error: "Please enter a number.", invalid_type_error: "Please enter a number."}).int().min(1, "Must be at least 1."),
@@ -17,22 +17,6 @@ export const formSchema = z.object({
   Malware_Protection_Software: z.string().min(2, "Please enter malware protection software.").max(255),
   Email_Client_Used: z.string().min(2, "Please enter email client.").max(255),
   Office_Apps_Used: z.string().min(2, "Please enter office apps used.").max(255),
-<<<<<<< Updated upstream
-  Software_Firewall_Assurance: z.enum(['Yes', 'No', 'N/A'], { required_error: "Please select an option." }),
-  Uninstall_Unused_Apps: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  Remove_Unused_Accounts: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  Strong_Passwords_MFA_Assurance: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  Device_Lock_Assurance: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  Separate_User_Account_Assurance: z.enum(['Yes', 'No', 'N/A']).optional(),
-  Update_Devices: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  Supported_Licensed: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  In_Scope: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  Automatic_Updates: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
-  Anti_Malware_All: z.enum(['Yes', 'No', 'N/A'], { required_error: "Please select an option." }),
-  Antimalware_Updates: z.enum(['Yes', 'No', 'N/A'], { required_error: "Please select an option." }),
-  Antimalware_Scans: z.enum(['Yes', 'No', 'N/A'], { required_error: "Please select an option." }),
-  Antimalware_Web_Protection: z.enum(['Yes', 'No', 'N/A'], { required_error: "Please select an option." }),
-=======
   Other_Cloud_Services: z.string().optional(),
   MFA_On_Cloud_Services: z.enum(['Yes', 'No', 'I dont know / unknown']).optional(),
   
@@ -55,7 +39,6 @@ export const formSchema = z.object({
   Antimalware_Scans: z.enum(['Yes', 'No', 'N/A', 'I dont know / unknown'], { required_error: "This field is required." }),
   Antimalware_Web_Protection: z.enum(['Yes', 'No', 'N/A', 'I dont know / unknown'], { required_error: "This field is required." }),
 
->>>>>>> Stashed changes
   Personalised_Help: z.enum(['Yes', 'No'], { required_error: "Please select an option." }),
   Comments_Feedback: z.string().optional(),
   IP_Address: z.string(),

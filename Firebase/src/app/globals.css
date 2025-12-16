@@ -3,8 +3,6 @@
 @tailwind utilities;
  
 @layer base {
-<<<<<<< Updated upstream
-=======
   :root {
     --background: 0 0% 100%;
     --foreground: 225 12% 18%;
@@ -108,7 +106,6 @@
 }
  
 @layer base {
->>>>>>> Stashed changes
   * {
     @apply border-border;
   }
