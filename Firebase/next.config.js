@@ -34,6 +34,11 @@ const nextConfig = {
     ],
   },
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+  experimental: {
+  }
+>>>>>>> Stashed changes
 =======
   experimental: {
   }

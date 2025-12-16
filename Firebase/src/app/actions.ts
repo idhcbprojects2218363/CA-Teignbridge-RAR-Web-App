@@ -40,7 +40,11 @@ async function verifyRecaptcha(token: string, remoteip?: string) {
   }
 }
 
+<<<<<<< Updated upstream
 async function sendToGoogleAppsScript(data: any) {
+=======
+async function sendToGoogleAppsScript(data: FormSchema & { Submission_ID: string }) {
+>>>>>>> Stashed changes
   const scriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
 
   if (!scriptUrl) {
@@ -48,6 +52,7 @@ async function sendToGoogleAppsScript(data: any) {
     return { success: false, error: "Server is not configured to save data." };
   }
   
+<<<<<<< Updated upstream
   try {
     const response = await fetch(scriptUrl, {
       method: 'POST',
@@ -152,6 +157,77 @@ export async function handleComplianceCheck(data: FormSchema) {
   if (!scriptResult.success) {
      return { success: false, error: scriptResult.error };
   }
+=======
+  const now = new Date();
+  const dueDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  
+  const fullData = {
+    ...data,
+    Submission_Timestamp_ISO: now.toISOString(),
+    Response_Due_Date_ISO: dueDate.toISOString(),
+  };
+
+  try {
+    const response = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(fullData),
+      redirect: 'follow', 
+    });
+
+    const responseBody = await response.json();
+
+    if (responseBody.result === 'success') {
+      return { success: true, submissionId: data.Submission_ID };
+    } else {
+      console.error("Error from Google Apps Script:", responseBody.message);
+      return { success: false, error: responseBody.message || "An unknown error occurred in the script." };
+    }
+
+  } catch (error) {
+    console.error("Error sending data to Google Apps Script:", error);
+    const errorMessage = error instanceof Error ? error.message : "An internal error occurred while contacting the save service.";
+    return { success: false, error: `Failed to save data: ${errorMessage}` };
+  }
+}
+
+export async function handleComplianceCheck(data: FormSchema) {
+  
+  // Honeypot check
+  if (data.Fax) {
+    console.warn("Honeypot field filled. Submission silently rejected.");
+    return { success: true, data: { submissionId: "honeypot-triggered" } };
+  }
+  
+  const recaptchaToken = data.recaptchaToken;
+
+  if (!recaptchaToken) {
+    return { success: false, error: "reCAPTCHA token is missing. Please try again." };
+  }
+  
+  // Verify reCAPTCHA
+  const recaptchaResult = await verifyRecaptcha(recaptchaToken, data.IP_Address);
+  if (!recaptchaResult.success) {
+    return { success: false, error: recaptchaResult.error };
+  }
+  
+  // Generate Submission ID
+  const timestampPart = format(new Date(), 'yyyyMMdd-HHmmss');
+  const randomPart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  const submissionId = `${timestampPart}-${randomPart}`;
+
+  const dataWithId = { ...data, Submission_ID: submissionId };
+
+  // The data is already validated by the client form.
+  // Now, send it to Google Apps Script which will handle sheet writing and emailing.
+  const scriptResult = await sendToGoogleAppsScript(dataWithId);
+  
+  if (!scriptResult.success) {
+     return { success: false, error: scriptResult.error };
+  }
+>>>>>>> Stashed changes
 
   return { success: true, data: { submissionId: scriptResult.submissionId } };
 }
