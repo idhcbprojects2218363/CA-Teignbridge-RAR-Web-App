@@ -79,11 +79,7 @@ export default function AssessmentResults() {
                     <strong>One-to-One Appointment:</strong> If you requested assistance on the form, please use the self-service booking link below to schedule your consultation with the IT Manager.
                 </li>
                 <li>
-<<<<<<< Updated upstream
                     <strong>Periodic Spot Checks:</strong> As part of ongoing compliance requirements, your device may undergo periodic spot checks “bi-weekly, monthly or quarterly” by the IT Manager. Your application will be kept under review by the IT Manager to ensure that access is issued to personal devices appropriately at all times.
-=======
-                    <strong>Periodic Spot Checks:</strong> As part of ongoing compliance requirements, your application and device may undergo periodic spot checks “bi-weekly, monthly or quarterly” by the IT Manager.
->>>>>>> Stashed changes
                 </li>
                  <li>
                     <strong>Working Together:</strong> By collaborating more closely with you, the IT Manager aims to find appropriate solutions should your device become non-compliant (a security risk and out of scope with CE requirements) while we jointly ensure our commitment to protecting LCA Teignbridge, and aiming to deliver the best possible service for our clients.

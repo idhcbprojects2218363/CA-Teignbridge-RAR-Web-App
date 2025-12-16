@@ -33,16 +33,8 @@ const nextConfig = {
       },
     ],
   },
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
   experimental: {
   }
->>>>>>> Stashed changes
-=======
-  experimental: {
-  }
->>>>>>> Stashed changes
 };
 
 module.exports = nextConfig;

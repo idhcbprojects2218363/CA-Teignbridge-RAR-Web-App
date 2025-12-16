@@ -432,11 +432,7 @@ export default function ComplianceForm() {
                   <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   <span className="font-bold text-primary">{stepDescriptions[currentStep]}</span>
                 </div>
-<<<<<<< Updated upstream
                 <Button type="button" variant="outline" size="sm" onClick={() => clearForm(true)}>
-=======
-                <Button variant="outline" size="sm" onClick={() => clearForm(true)}>
->>>>>>> Stashed changes
                     <Trash2 className="mr-2 h-4 w-4" />
                     Clear Form
                 </Button>
@@ -978,9 +974,6 @@ export default function ComplianceForm() {
   );
 }
 
-<<<<<<< Updated upstream
     
 
-=======
->>>>>>> Stashed changes
     

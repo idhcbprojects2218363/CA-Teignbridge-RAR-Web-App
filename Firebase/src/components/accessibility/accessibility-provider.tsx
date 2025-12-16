@@ -4,10 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
-<<<<<<< Updated upstream
 type ToolbarSide = 'left' | 'right';
-=======
->>>>>>> Stashed changes
 
 interface AccessibilityContextType {
   isHighContrast: boolean;
@@ -15,14 +12,11 @@ interface AccessibilityContextType {
   fontSize: FontSize;
   increaseFontSize: () => void;
   decreaseFontSize: () => void;
-<<<<<<< Updated upstream
   toolbarPosition: { top: number; side: ToolbarSide };
   setToolbarPosition: React.Dispatch<React.SetStateAction<{ top: number; side: ToolbarSide }>>;
   toggleToolbarSide: () => void;
   showLabels: boolean;
   toggleShowLabels: () => void;
-=======
->>>>>>> Stashed changes
 }
 
 const AccessibilityContext = createContext<AccessibilityContextType | null>(null);
@@ -44,33 +38,24 @@ const FONT_SIZE_CLASSES = {
 };
 const LOCAL_STORAGE_KEY_CONTRAST = 'accessibility-high-contrast';
 const LOCAL_STORAGE_KEY_FONT_SIZE = 'accessibility-font-size';
-<<<<<<< Updated upstream
 const LOCAL_STORAGE_KEY_TOOLBAR_POS = 'accessibility-toolbar-position';
 const LOCAL_STORAGE_KEY_SHOW_LABELS = 'accessibility-show-labels';
-=======
->>>>>>> Stashed changes
 
 
 export const AccessibilityProvider = ({ children }: { children: React.ReactNode }) => {
   const [isHighContrast, setIsHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState<FontSize>('md');
-<<<<<<< Updated upstream
   const [toolbarPosition, setToolbarPosition] = useState<{ top: number, side: ToolbarSide }>({ top: 16, side: 'right' });
   const [showLabels, setShowLabels] = useState(false);
-=======
->>>>>>> Stashed changes
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     // Load settings from localStorage on initial client-side mount
     const savedContrast = localStorage.getItem(LOCAL_STORAGE_KEY_CONTRAST);
     const savedFontSize = localStorage.getItem(LOCAL_STORAGE_KEY_FONT_SIZE) as FontSize | null;
-<<<<<<< Updated upstream
     const savedToolbarPos = localStorage.getItem(LOCAL_STORAGE_KEY_TOOLBAR_POS);
     const savedShowLabels = localStorage.getItem(LOCAL_STORAGE_KEY_SHOW_LABELS);
 
-=======
->>>>>>> Stashed changes
 
     if (savedContrast) {
       const newContrastState = savedContrast === 'true';
@@ -84,7 +69,6 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
       document.documentElement.classList.remove(...Object.values(FONT_SIZE_CLASSES));
       document.documentElement.classList.add(FONT_SIZE_CLASSES[newFontSize]);
     }
-<<<<<<< Updated upstream
     
     if (savedToolbarPos) {
         try {
@@ -109,11 +93,6 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
       localStorage.setItem(LOCAL_STORAGE_KEY_TOOLBAR_POS, JSON.stringify(toolbarPosition));
     }
   }, [toolbarPosition, isMounted]);
-=======
-
-    setIsMounted(true);
-  }, []);
->>>>>>> Stashed changes
 
   const toggleHighContrast = useCallback(() => {
     setIsHighContrast(prev => {
@@ -149,7 +128,6 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
   const increaseFontSize = useCallback(() => changeFontSize('increase'), []);
   const decreaseFontSize = useCallback(() => changeFontSize('decrease'), []);
 
-<<<<<<< Updated upstream
   const toggleToolbarSide = useCallback(() => {
     setToolbarPosition(prev => ({
         ...prev,
@@ -166,8 +144,6 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
   }, []);
 
 
-=======
->>>>>>> Stashed changes
   // Avoid rendering children until settings have been loaded on the client
   if (!isMounted) {
     return null;
@@ -175,11 +151,7 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
 
   return (
     <AccessibilityContext.Provider
-<<<<<<< Updated upstream
       value={{ isHighContrast, toggleHighContrast, fontSize, increaseFontSize, decreaseFontSize, toolbarPosition, setToolbarPosition, toggleToolbarSide, showLabels, toggleShowLabels }}
-=======
-      value={{ isHighContrast, toggleHighContrast, fontSize, increaseFontSize, decreaseFontSize }}
->>>>>>> Stashed changes
     >
       {children}
     </AccessibilityContext.Provider>
