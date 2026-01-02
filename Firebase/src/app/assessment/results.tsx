@@ -85,15 +85,27 @@ export default function AssessmentResults() {
                     <strong>Working Together:</strong> By collaborating more closely with you, the IT Manager aims to find appropriate solutions should your device become non-compliant (a security risk and out of scope with CE requirements) while we jointly ensure our commitment to protecting LCA Teignbridge, and aiming to deliver the best possible service for our clients.
                 </li>
                  <li>
-                    <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4"/>
-                        <strong>Read the FAQ:</strong>
-                        <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
-                             What to do After your submission
-                        </a>
+                    <div className="flex flex-col items-start gap-2">
+                        <div className="flex items-center gap-2">
+                           <FileText className="h-4 w-4"/>
+                           <strong>Read the Guidance:</strong>
+                        </div>
+                        <div className="flex flex-col pl-6">
+                             <a href={process.env.NEXT_PUBLIC_GUIDANCE_SELF_HELP_URL} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80 whitespace-normal text-left">
+                                Next Steps: Self-Help Guide and Requesting Assistance
+                            </a>
+                        </div>
                     </div>
                 </li>
             </ul>
+             <div className="mt-6 text-card-foreground/90">
+                <h3 className="text-xl font-headline font-semibold text-primary mb-2">Once your RAR Application has been approved</h3>
+                <p className="mt-2">Once your application has been approved, you can use the self-help (see above).</p>
+                <ul className="list-disc pl-5 my-2">
+                  <li>Please note that your mobile device, “smartphone or tablet”, may not get immediate access if you have followed the self-help instructions exactly.</li>
+                </ul>
+                <p>This is normal, as these devices likely require manual approval from the IT Manager. The IT manager will get an email notification of your request, which will be <span className="italic underline">granted automatically</span> since your <span className="italic underline">RAR Application is already approved</span>.</p>
+              </div>
         </CardContent>
       </Card>
     
@@ -104,7 +116,7 @@ export default function AssessmentResults() {
           <CardContent className="space-y-3 text-center">
               <p>If you requested a meeting, schedule your 1-to-1 appointment now:</p>
               <Button asChild size="lg">
-                  <a href="https://calendar.app.google/BYLddTWzP88xxuLm7" target="_blank" rel="noopener noreferrer">
+                  <a href={process.env.NEXT_PUBLIC_APPOINTMENT_BOOKING_URL} target="_blank" rel="noopener noreferrer">
                       Book Your Appointment (Google Calendar)
                   </a>
               </Button>

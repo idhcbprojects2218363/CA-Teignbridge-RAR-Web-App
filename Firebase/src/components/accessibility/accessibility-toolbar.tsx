@@ -8,6 +8,12 @@ import { Contrast, ZoomIn, ZoomOut, ChevronsLeft, ChevronsRight, GripVertical, I
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 
+
+// SVG components for solid triangles
+const TriangleUp = () => <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4L11.5 10L3.5 10L7.5 4Z" fill="currentColor"></path></svg>;
+const TriangleDown = () => <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 11L3.5 5H11.5L7.5 11Z" fill="currentColor"></path></svg>;
+
+
 const ToolbarButton = ({
   onClick,
   disabled,
@@ -15,7 +21,8 @@ const ToolbarButton = ({
   showLabel,
   label,
   children,
-  onMouseDown
+  onMouseDown,
+  side,
 }: {
   onClick?: () => void,
   disabled?: boolean,
@@ -24,9 +31,13 @@ const ToolbarButton = ({
   label: string,
   children: React.ReactNode,
   onMouseDown?: (e: React.MouseEvent<HTMLButtonElement>) => void,
+  side: 'left' | 'right',
 }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn(
+      "flex items-center gap-2",
+      side === 'right' && "flex-row-reverse"
+    )}>
       <Button
           variant="ghost"
           size="icon"
@@ -54,7 +65,9 @@ export default function AccessibilityToolbar() {
         setToolbarPosition,
         toggleToolbarSide,
         showLabels,
-        toggleShowLabels
+        toggleShowLabels,
+        isToolbarCollapsed,
+        toggleToolbarCollapsed
     } = useAccessibility();
 
     const [isDragging, setIsDragging] = useState(false);
@@ -62,6 +75,15 @@ export default function AccessibilityToolbar() {
     const dragStartPos = useRef(0);
     const dragStartTop = useRef(0);
     const [isInTopHalf, setIsInTopHalf] = useState(true);
+    const preExpansionTop = useRef<number | null>(null);
+
+    const handleToggleCollapse = () => {
+        if (!isToolbarCollapsed) {
+            // Collapsing now: save current position before potential bump
+            preExpansionTop.current = toolbarPosition.top;
+        }
+        toggleToolbarCollapsed();
+    };
 
     const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
@@ -80,7 +102,8 @@ export default function AccessibilityToolbar() {
 
         const toolbarHeight = toolbarRef.current?.offsetHeight || 0;
         const top = Math.max(16, Math.min(newTop, window.innerHeight - toolbarHeight - 16));
-
+        
+        preExpansionTop.current = null; // Reset on drag
         setToolbarPosition(prev => ({ ...prev, top }));
     }, [isDragging, setToolbarPosition]);
 
@@ -107,18 +130,68 @@ export default function AccessibilityToolbar() {
 
     useEffect(() => {
         if (toolbarRef.current) {
-            const newIsInTopHalf = toolbarPosition.top < window.innerHeight / 2;
+            const newIsInTopHalf = toolbarPosition.top + (toolbarRef.current.offsetHeight / 2) < (window.innerHeight / 2);
             if (newIsInTopHalf !== isInTopHalf) {
                 setIsInTopHalf(newIsInTopHalf);
             }
         }
-    }, [toolbarPosition.top, isInTopHalf]);
+    }, [toolbarPosition.top, isInTopHalf, isToolbarCollapsed]); // Depend on isToolbarCollapsed to re-evaluate
+
+    useEffect(() => {
+        const toolbarNode = toolbarRef.current;
+        if (!toolbarNode) return;
+
+        const observer = new ResizeObserver(() => {
+            let newTop = toolbarPosition.top;
+            const toolbarHeight = toolbarNode.offsetHeight;
+            
+            // If toolbar is now too low, bump it up
+            if (newTop + toolbarHeight > window.innerHeight - 16) {
+                newTop = window.innerHeight - toolbarHeight - 16;
+            }
+            
+            // Logic for snapping back after collapse
+            if (isToolbarCollapsed && preExpansionTop.current !== null) {
+                 const newTopCandidate = preExpansionTop.current;
+                 if(newTopCandidate > newTop) {
+                    newTop = newTopCandidate;
+                 }
+                 preExpansionTop.current = null;
+            }
+
+            if (newTop !== toolbarPosition.top) {
+                setToolbarPosition(prev => ({ ...prev, top: newTop }));
+            }
+        });
+
+        observer.observe(toolbarNode);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [setToolbarPosition, isToolbarCollapsed, toolbarPosition.top]);
+
 
     const ToolbarTitle = () => (
       <div className="text-center py-1">
         <h2 className="font-bold text-sm select-none text-muted-foreground">Tools</h2>
       </div>
     );
+    
+    const ToggleCollapseButton = () => (
+       <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleToggleCollapse}
+          aria-label={isToolbarCollapsed ? "Expand toolbar" : "Collapse toolbar"}
+          className="h-8 w-8 rounded-full"
+        >
+          {isToolbarCollapsed ? 
+             (isInTopHalf ? <TriangleDown /> : <TriangleUp />) :
+             (isInTopHalf ? <TriangleUp /> : <TriangleDown />)
+          }
+        </Button>
+    )
 
     const DragHandle = () => (
       <div 
@@ -132,34 +205,52 @@ export default function AccessibilityToolbar() {
       </div>
     );
 
-    const Controls = () => (
-       <div className={cn("flex flex-col gap-1 p-1", showLabels && "items-start")}>
+    const SwitchSideButton = () => (
+      <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleToolbarSide}
+          aria-label={`Move toolbar to the ${toolbarPosition.side === 'left' ? 'right' : 'left'}`}
+          className="h-8 w-8 rounded-full"
+      >
+          {toolbarPosition.side === 'left' ? (
+              <ChevronsRight className="h-4 w-4" />
+          ) : (
+              <ChevronsLeft className="h-4 w-4" />
+          )}
+      </Button>
+    );
+
+    const Controls = () => {
+      const topHalfControls = (
+        <>
           <div className="flex flex-col gap-1">
             <ToolbarButton
               onClick={toggleHighContrast}
               ariaLabel={`Toggle high contrast mode. Currently ${isHighContrast ? 'on' : 'off'}`}
               showLabel={showLabels}
               label="High Contrast"
+              side={toolbarPosition.side}
             >
                 <Contrast className="h-4 w-4" />
             </ToolbarButton>
-            
             <ToolbarButton
                 onClick={decreaseFontSize}
                 disabled={fontSize === 'sm'}
                 ariaLabel="Decrease font size"
                 showLabel={showLabels}
                 label="Smaller Text"
+                side={toolbarPosition.side}
             >
                 <ZoomOut className="h-4 w-4" />
             </ToolbarButton>
-
             <ToolbarButton
                 onClick={increaseFontSize}
                 disabled={fontSize === 'xl'}
                 ariaLabel="Increase font size"
                 showLabel={showLabels}
                 label="Larger Text"
+                side={toolbarPosition.side}
             >
                 <ZoomIn className="h-4 w-4" />
             </ToolbarButton>
@@ -167,60 +258,131 @@ export default function AccessibilityToolbar() {
           <Separator className="my-1" />
           <div className="flex flex-col gap-1">
             <ToolbarButton
-                onClick={toggleToolbarSide}
-                ariaLabel={`Move toolbar to the ${toolbarPosition.side === 'left' ? 'right' : 'left'}`}
+                onClick={toggleShowLabels}
+                ariaLabel={showLabels ? "Hide labels" : "Show labels"}
                 showLabel={showLabels}
-                label="Switch Side"
+                label={showLabels ? "Hide Labels" : "Show Labels"}
+                side={toolbarPosition.side}
             >
-                {toolbarPosition.side === 'left' ? (
-                    <ChevronsRight className="h-4 w-4" />
-                ) : (
-                    <ChevronsLeft className="h-4 w-4" />
-                )}
+                <Info className="h-4 w-4" />
             </ToolbarButton>
+          </div>
+        </>
+      );
+
+      const bottomHalfControls = (
+        <>
+          <div className="flex flex-col gap-1">
             <ToolbarButton
                 onClick={toggleShowLabels}
                 ariaLabel={showLabels ? "Hide labels" : "Show labels"}
                 showLabel={showLabels}
                 label={showLabels ? "Hide Labels" : "Show Labels"}
+                side={toolbarPosition.side}
             >
                 <Info className="h-4 w-4" />
             </ToolbarButton>
           </div>
-      </div>
-    );
+          <Separator className="my-1" />
+          <div className="flex flex-col gap-1">
+            <ToolbarButton
+                onClick={increaseFontSize}
+                disabled={fontSize === 'xl'}
+                ariaLabel="Increase font size"
+                showLabel={showLabels}
+                label="Larger Text"
+                side={toolbarPosition.side}
+            >
+                <ZoomIn className="h-4 w-4" />
+            </ToolbarButton>
+            <ToolbarButton
+                onClick={decreaseFontSize}
+                disabled={fontSize === 'sm'}
+                ariaLabel="Decrease font size"
+                showLabel={showLabels}
+                label="Smaller Text"
+                side={toolbarPosition.side}
+            >
+                <ZoomOut className="h-4 w-4" />
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={toggleHighContrast}
+              ariaLabel={`Toggle high contrast mode. Currently ${isHighContrast ? 'on' : 'off'}`}
+              showLabel={showLabels}
+              label="High Contrast"
+              side={toolbarPosition.side}
+            >
+                <Contrast className="h-4 w-4" />
+            </ToolbarButton>
+          </div>
+        </>
+      );
 
+      return (
+        <div className={cn("flex flex-col gap-1 p-1", showLabels && "items-start")}>
+          {isInTopHalf ? topHalfControls : bottomHalfControls}
+        </div>
+      );
+    };
+
+    const HandleControls = () => {
+      if (isInTopHalf) {
+        return (
+          <>
+            <ToolbarTitle />
+            <Separator orientation='horizontal' className='w-full' />
+            <DragHandle />
+            <Separator orientation='horizontal' className='w-full' />
+            <SwitchSideButton />
+            <Separator orientation='horizontal' className='w-full' />
+            <ToggleCollapseButton />
+          </>
+        )
+      }
+      return (
+        <>
+          <ToggleCollapseButton />
+          <Separator orientation='horizontal' className='w-full' />
+          <SwitchSideButton />
+          <Separator orientation='horizontal' className='w-full' />
+          <DragHandle />
+          <Separator orientation='horizontal' className='w-full' />
+          <ToolbarTitle />
+        </>
+      )
+    }
 
     return (
         <div
             ref={toolbarRef}
             className={cn(
-                "fixed z-50 flex flex-col items-stretch gap-1 rounded-lg border bg-background/80 p-1 shadow-lg backdrop-blur-sm transition-all",
-                 toolbarPosition.side === 'right' ? "right-4" : "left-4",
-                 isDragging && "cursor-grabbing shadow-2xl"
+                "fixed z-50 flex",
+                toolbarPosition.side === 'right' ? "right-0 flex-row-reverse" : "left-0 flex-row",
+                isDragging && "cursor-grabbing",
+                isInTopHalf ? "items-start" : "items-end"
             )}
-            style={{ top: `${toolbarPosition.top}px` }}
+            style={{ 
+                top: `${toolbarPosition.top}px`,
+            }}
             aria-label="Accessibility Toolbar"
         >
-          <div className={cn("flex flex-col", isInTopHalf ? 'order-1' : 'order-3')}>
-            {isInTopHalf && <ToolbarTitle />}
-            {isInTopHalf && <Separator />}
-          </div>
-          
-          <div className={cn("flex items-stretch", 
-            showLabels && 'items-start', 
-            isInTopHalf ? 'order-2' : 'order-1',
-            toolbarPosition.side === 'right' && 'flex-row-reverse'
-          )}>
-            <DragHandle />
-            <Separator orientation="vertical" className="h-auto" />
-            <Controls />
-          </div>
-
-          <div className={cn("flex flex-col", isInTopHalf ? 'order-3' : 'order-1')}>
-             {!isInTopHalf && <Separator />}
-             {!isInTopHalf && <ToolbarTitle />}
-          </div>
+            <div className={cn(
+              "flex flex-col items-center justify-center rounded-lg border bg-background/80 backdrop-blur-sm",
+            )}>
+                <HandleControls />
+            </div>
+            
+            {!isToolbarCollapsed && (
+               <div className={cn(
+                  "flex flex-col items-stretch rounded-lg border bg-background/80 p-1 shadow-lg backdrop-blur-sm",
+               )}>
+                  <div className={cn("flex", 
+                      showLabels && !isToolbarCollapsed && 'items-start'
+                  )}>
+                      <Controls />
+                  </div>
+               </div>
+            )}
         </div>
     )
 }

@@ -17,6 +17,8 @@ interface AccessibilityContextType {
   toggleToolbarSide: () => void;
   showLabels: boolean;
   toggleShowLabels: () => void;
+  isToolbarCollapsed: boolean;
+  toggleToolbarCollapsed: () => void;
 }
 
 const AccessibilityContext = createContext<AccessibilityContextType | null>(null);
@@ -40,6 +42,7 @@ const LOCAL_STORAGE_KEY_CONTRAST = 'accessibility-high-contrast';
 const LOCAL_STORAGE_KEY_FONT_SIZE = 'accessibility-font-size';
 const LOCAL_STORAGE_KEY_TOOLBAR_POS = 'accessibility-toolbar-position';
 const LOCAL_STORAGE_KEY_SHOW_LABELS = 'accessibility-show-labels';
+const LOCAL_STORAGE_KEY_TOOLBAR_COLLAPSED = 'accessibility-toolbar-collapsed';
 
 
 export const AccessibilityProvider = ({ children }: { children: React.ReactNode }) => {
@@ -47,6 +50,7 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [toolbarPosition, setToolbarPosition] = useState<{ top: number, side: ToolbarSide }>({ top: 16, side: 'right' });
   const [showLabels, setShowLabels] = useState(false);
+  const [isToolbarCollapsed, setIsToolbarCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -55,6 +59,7 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
     const savedFontSize = localStorage.getItem(LOCAL_STORAGE_KEY_FONT_SIZE) as FontSize | null;
     const savedToolbarPos = localStorage.getItem(LOCAL_STORAGE_KEY_TOOLBAR_POS);
     const savedShowLabels = localStorage.getItem(LOCAL_STORAGE_KEY_SHOW_LABELS);
+    const savedToolbarCollapsed = localStorage.getItem(LOCAL_STORAGE_KEY_TOOLBAR_COLLAPSED);
 
 
     if (savedContrast) {
@@ -83,6 +88,10 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
 
     if (savedShowLabels) {
         setShowLabels(savedShowLabels === 'true');
+    }
+    
+    if (savedToolbarCollapsed) {
+        setIsToolbarCollapsed(savedToolbarCollapsed === 'true');
     }
 
     setIsMounted(true);
@@ -142,6 +151,14 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
         return newState;
     });
   }, []);
+  
+  const toggleToolbarCollapsed = useCallback(() => {
+    setIsToolbarCollapsed(prev => {
+        const newState = !prev;
+        localStorage.setItem(LOCAL_STORAGE_KEY_TOOLBAR_COLLAPSED, String(newState));
+        return newState;
+    });
+  }, []);
 
 
   // Avoid rendering children until settings have been loaded on the client
@@ -151,7 +168,13 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
 
   return (
     <AccessibilityContext.Provider
-      value={{ isHighContrast, toggleHighContrast, fontSize, increaseFontSize, decreaseFontSize, toolbarPosition, setToolbarPosition, toggleToolbarSide, showLabels, toggleShowLabels }}
+      value={{ 
+        isHighContrast, toggleHighContrast, 
+        fontSize, increaseFontSize, decreaseFontSize, 
+        toolbarPosition, setToolbarPosition, 
+        toggleToolbarSide, showLabels, toggleShowLabels,
+        isToolbarCollapsed, toggleToolbarCollapsed
+      }}
     >
       {children}
     </AccessibilityContext.Provider>

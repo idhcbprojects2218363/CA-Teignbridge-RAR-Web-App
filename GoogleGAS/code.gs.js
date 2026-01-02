@@ -24,7 +24,6 @@ const HEADERS = [
   'Reason_for_BYOD', 'Device_Type', 'Device_Count', 'Device_Model_Name',
   'OS_and_Version', 'Web_Browser_and_Version', 'Malware_Protection_Software',
   'Email_Client_Used', 'Office_Apps_Used', 'Other_Cloud_Services', 'MFA_On_Cloud_Services',
-<<<<<<< Updated upstream
   'Software_Firewall_Assurance', 'Uninstall_Unused_Apps', 'Remove_Unused_Accounts',
   'Strong_Passwords_MFA_Assurance', 'Device_Lock_Assurance', 'Separate_User_Account_Assurance',
   'Official_App_Stores_Assurance', 'AutoRun_Disabled_Assurance', 'Update_Devices',
@@ -32,15 +31,6 @@ const HEADERS = [
   'Antimalware_Scans', 'Antimalware_Web_Protection', 'Personalised_Help',
   'Comments_Feedback', 'Acknowledge_Policy_Compliance', 'Acknowledge_Security_Risks',
   'Acknowledge_Security_Measures'
-=======
-  'Software_Firewall_Assurance',
-  'Uninstall_Unused_Apps', 'Remove_Unused_Accounts', 'Strong_Passwords_MFA_Assurance',
-  'Device_Lock_Assurance', 'Separate_User_Account_Assurance', 'Official_App_Stores_Assurance',
-  'AutoRun_Disabled_Assurance', 'Update_Devices', 'Supported_Licensed', 'In_Scope', 'Automatic_Updates',
-  'Anti_Malware_All', 'Antimalware_Updates', 'Antimalware_Scans',
-  'Antimalware_Web_Protection', 'Personalised_Help', 'Comments_Feedback',
-  'Acknowledge_Policy_Compliance', 'Acknowledge_Security_Risks', 'Acknowledge_Security_Measures'
->>>>>>> Stashed changes
 ];
 
 
@@ -63,11 +53,7 @@ function onOpen() {
  */
 function setupSheet() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-<<<<<<< Updated upstream
   const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
-=======
-  const headerRange = sheet.getRange(1, 1, 1, sheet.getMaxColumns());
->>>>>>> Stashed changes
   const headerValues = headerRange.getValues()[0];
   let updated = false;
 
@@ -94,7 +80,6 @@ function verifySheetHeaders() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const ui = SpreadsheetApp.getUi();
 
-<<<<<<< Updated upstream
   if (!sheet) {
     ui.alert(`Sheet with name "${SHEET_NAME}" not found.`);
     return;
@@ -190,112 +175,6 @@ function backfillSubmissionIDs() {
         
         sheet.getRange(i + 1, idColIndex + 1).setValue(newId);
         updatedCount++;
-=======
-  const lastColumn = sheet.getLastColumn();
-  const actualHeaders = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
-
-  let mismatches = [];
-  let scriptIndex = 0;
-  let sheetIndex = 0;
-
-  while (scriptIndex < HEADERS.length || sheetIndex < actualHeaders.length) {
-    const expected = HEADERS[scriptIndex];
-    const actual = actualHeaders[sheetIndex];
-
-    if (expected === actual) {
-      // Headers match, advance both pointers
-      scriptIndex++;
-      sheetIndex++;
-    } else {
-      // Headers do not match
-      const mismatchMessage = 
-        `Mismatch at Column ${String.fromCharCode(65 + sheetIndex)}:\n` +
-        `  - Expected: "${expected || '[End of Script Headers]'}"\n` +
-        `  - Found: "${actual || '[End of Sheet Headers]'}"`;
-      mismatches.push(mismatchMessage);
-
-      // Check if the expected header exists later in the sheet
-      const foundIndex = actualHeaders.indexOf(expected, sheetIndex + 1);
-      
-      if (foundIndex !== -1) {
-        // Found the expected header later, implies missing columns in between.
-        // We advance the scriptIndex and let the loop continue checking the sheet columns
-        // against the next expected headers. This correctly identifies renamed columns.
-         scriptIndex++;
-      } else {
-        // Could not find the expected header later in the sheet.
-        // This could mean a renamed column or an extra column in the sheet.
-        // Advance both to prevent an infinite loop.
-        scriptIndex++;
-        sheetIndex++;
->>>>>>> Stashed changes
-      }
-    }
-  }
-
-<<<<<<< Updated upstream
-  if (updatedCount > 0) {
-    ui.alert(`Successfully backfilled ${updatedCount} Submission IDs.`);
-  } else {
-    ui.alert('No empty Submission IDs found to backfill.');
-  }
-}
-=======
-  if (mismatches.length > 0) {
-    let message = 'Header verification found mismatches!\n\n' +
-                  'Please review the list below. For each mismatch, you may need to insert a new column to the left of the specified column. After making corrections, rerun this verification.\n\n' +
-                  mismatches.join('\n\n');
-    ui.alert('Header Mismatch', message, ui.ButtonSet.OK);
-  } else {
-    ui.alert('Header verification successful! All columns match the script definition.');
-  }
-}
-
-
-/**
- * Backfills missing Submission_IDs for existing records.
- * Iterates through the sheet, and for any row with an empty Submission_ID,
- * it generates a new ID based on the Submission_Timestamp_ISO.
- */
-function backfillSubmissionIDs() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  const dataRange = sheet.getDataRange();
-  const values = dataRange.getValues();
-  const ui = SpreadsheetApp.getUi();
->>>>>>> Stashed changes
-
-  const headerRow = values[0];
-  const idColIndex = headerRow.indexOf('Submission_ID');
-  const timestampColIndex = headerRow.indexOf('Submission_Timestamp_ISO');
-
-<<<<<<< Updated upstream
-=======
-  if (idColIndex === -1 || timestampColIndex === -1) {
-    ui.alert('Error: Could not find "Submission_ID" or "Submission_Timestamp_ISO" columns.');
-    return;
-  }
-
-  let updatedCount = 0;
-
-  for (let i = 1; i < values.length; i++) { // Start from row 2 (index 1)
-    const row = values[i];
-    if (!row[idColIndex] && row[timestampColIndex]) { // If ID is empty but timestamp exists
-      const timestampStr = row[timestampColIndex];
-      const date = new Date(timestampStr);
-
-      if (!isNaN(date.getTime())) {
-        const yyyy = date.getUTCFullYear();
-        const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const dd = String(date.getUTCDate()).padStart(2, '0');
-        const hh = String(date.getUTCHours()).padStart(2, '0');
-        const min = String(date.getUTCMinutes()).padStart(2, '0');
-        const ss = String(date.getUTCSeconds()).padStart(2, '0');
-        const randomPart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        
-        const newId = `${yyyy}${mm}${dd}-${hh}${min}${ss}-${randomPart}`;
-        
-        sheet.getRange(i + 1, idColIndex + 1).setValue(newId);
-        updatedCount++;
       }
     }
   }
@@ -308,7 +187,6 @@ function backfillSubmissionIDs() {
 }
 
 
->>>>>>> Stashed changes
 /**
  * Handles HTTP POST requests, appends data to the sheet, and sends emails.
  * This is the new primary function for handling form submissions.
@@ -325,7 +203,13 @@ function doPost(e) {
     const submissionData = JSON.parse(e.postData.contents);
 
     // Create the row data in the correct order based on HEADERS
-    const rowData = HEADERS.map(header => submissionData[header] || ''); // Use empty string for missing values
+    const rowData = HEADERS.map(header => {
+      const value = submissionData[header];
+      if (value === false) {
+        return false; // Explicitly return boolean false
+      }
+      return value || ''; // Use empty string for null, undefined, or empty string values
+    });
 
     // Append the new row to the sheet
     sheet.appendRow(rowData);
@@ -369,7 +253,6 @@ function sendApplicantEmail(data) {
     <ul>
   `;
 
-<<<<<<< Updated upstream
   // Iterate over the HEADERS array to ensure all fields are included in order.
   HEADERS.forEach(header => {
     // Check if the data object has this property and it's not empty or null.
@@ -379,25 +262,13 @@ function sendApplicantEmail(data) {
       body += `<li><strong>${formattedHeader}:</strong> ${data[header]}</li>`;
     }
   });
-=======
-  for (const key in data) {
-    // Only include fields that have a value and are part of the headers.
-    if (data[key] && HEADERS.includes(key)) {
-      body += `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${data[key]}</li>`;
-    }
-  }
->>>>>>> Stashed changes
   
   body += `
     </ul>
     <p><strong>What's Next?</strong></p>
     <p>The IT Manager will review your application. If you requested personalised help, please ensure you book a 1-to-1 appointment using the link on the submission confirmation page.</p>
     <p>If you missed the booking link, or if you selected "No" for help but have changed your mind, please refer to the document below for guidance on next steps.</p>
-<<<<<<< Updated upstream
-    <p><strong>Read Now:</strong> <a href="">What to do After your submission</a></p>
-=======
-    <p><strong>Read Now:</strong> <a href="https://YOUR_AFTER_SUBMISSION_FAQ_DOCUMENT">What to do After your submission</a></p>
->>>>>>> Stashed changes
+    <p><strong>Read Now:</strong> <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing">What to do After your submission</a></p>
     <p>Thank you for your cooperation.</p>
     <p>LCA Teignbridge IT</p>
   `;
@@ -428,7 +299,6 @@ function sendITManagerEmail(data) {
     <ul>
   `;
 
-<<<<<<< Updated upstream
   // Iterate over the HEADERS array to ensure all fields are included in order.
   HEADERS.forEach(header => {
     // Check if the data object has this property and it's not empty or null.
@@ -438,13 +308,6 @@ function sendITManagerEmail(data) {
       body += `<li><strong>${formattedHeader}:</strong> ${data[header]}</li>`;
     }
   });
-=======
-  for (const key in data) {
-     if (data[key] && HEADERS.includes(key)) {
-      body += `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${data[key]}</li>`;
-    }
-  }
->>>>>>> Stashed changes
 
    body += `</ul>`;
 
@@ -452,10 +315,3 @@ function sendITManagerEmail(data) {
     htmlBody: body,
   });
 }
-<<<<<<< Updated upstream
-=======
-
-    
-
-    
->>>>>>> Stashed changes

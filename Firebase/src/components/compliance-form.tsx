@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { formSchema, type FormSchema } from "@/lib/form-schema";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +58,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Switch } from "./ui/switch";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Script from "next/script";
+import { Calendar } from "./ui/calendar";
 
 declare global {
   interface Window {
@@ -78,7 +78,7 @@ const LOCAL_STORAGE_KEY = 'complianceFormData';
 
 
 const MandatoryLabel = ({ children }: { children: React.ReactNode }) => (
-  <FormLabel className="font-bold">
+  <FormLabel className="font-bold text-base">
     {children} <span className="text-destructive dark:text-yellow-400 [.high-contrast_&]:text-primary">*</span>
   </FormLabel>
 );
@@ -138,12 +138,18 @@ export default function ComplianceForm() {
   const { toast } = useToast();
   const [submissionTime, setSubmissionTime] = React.useState<Date | null>(null);
   const [isPrivacyBannerVisible, setPrivacyBannerVisible] = React.useState(true);
+  const [displayTime, setDisplayTime] = React.useState<Date | null>(null);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultFormValues,
     mode: "onChange",
   });
+  
+  React.useEffect(() => {
+    // This solves the hydration error by ensuring date is only calculated on client
+    setDisplayTime(new Date());
+  }, []);
 
   const onRecaptchaSuccess = (token: string) => {
     form.setValue("recaptchaToken", token, { shouldValidate: true });
@@ -193,7 +199,7 @@ export default function ComplianceForm() {
         }
         form.reset(defaultFormValues);
         setCurrentStep(1);
-        if (recaptchaLoaded && recaptchaWidgetRef.current !== null) {
+        if (recaptchaLoaded && recaptchaWidgetRef.current !== null && window.grecaptcha) {
             window.grecaptcha.reset(recaptchaWidgetRef.current);
         }
         setPrivacyBannerVisible(true);
@@ -267,6 +273,7 @@ export default function ComplianceForm() {
   const contactEmail = form.watch("Contact_Email");
   const contactNumber = form.watch("Contact_Number");
   const recaptchaToken = form.watch("recaptchaToken");
+  const watchedDeviceType = form.watch("Device_Type");
 
   type FieldName = keyof FormSchema;
 
@@ -394,9 +401,7 @@ export default function ComplianceForm() {
     />
   );
   
-  const now = new Date();
-
-  if (!clientLoaded) {
+  if (!clientLoaded || !displayTime) {
     return (
        <Card className="w-full">
         <CardHeader>
@@ -412,6 +417,15 @@ export default function ComplianceForm() {
         </CardFooter>
       </Card>
     );
+  }
+
+  const toDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
 
@@ -450,26 +464,24 @@ export default function ComplianceForm() {
               <div className="mt-4 space-y-4 rounded-lg border bg-muted/30 p-4 dark:bg-muted/50">
                 <h3 className="font-semibold text-muted-foreground">Submission Details (For IT Use):</h3>
                 <Separator />
-                {clientLoaded && (
-                  <div className="grid grid-cols-1 gap-x-8 gap-y-2 text-sm md:grid-cols-2">
-                      <div>
-                          <span className="font-bold">Current Date and time (submission):</span>
-                          <p>{format(submissionTime || now, 'dd/MM/yyyy HH:mm')}</p>
-                      </div>
-                      <div>
-                          <span className="font-bold">Initial Response No Later Than:</span>
-                          <p className="font-bold text-destructive dark:font-medium dark:text-yellow-400 [.high-contrast_&]:text-primary">{format(new Date((submissionTime || now).getTime() + 7 * 24 * 60 * 60 * 1000), 'dd/MM/yyyy HH:mm')}</p>
-                      </div>
-                  </div>
-                )}
+                <div className="grid grid-cols-1 gap-x-8 gap-y-2 text-sm md:grid-cols-2">
+                    <div>
+                        <span className="font-bold">Current Date and time (submission):</span>
+                        <p>{toDate(submissionTime || displayTime)}</p>
+                    </div>
+                    <div>
+                        <span className="font-bold">Initial Response No Later Than:</span>
+                        <p className="font-bold text-destructive dark:font-medium dark:text-yellow-400 [.high-contrast_&]:text-primary">{toDate(new Date((submissionTime || displayTime).getTime() + 7 * 24 * 60 * 60 * 1000))}</p>
+                    </div>
+                </div>
               </div>
               
               {(currentStep === 2 || currentStep === 3) && (
-                <p className="pt-4 text-sm text-foreground">If a question does not apply please type none or N/A.</p>
+                <p className="pt-4 text-base text-foreground">If a question does not apply please type none or N/A.</p>
               )}
               {(currentStep === 4 || currentStep === 5) && (
                 <div className="pt-4 space-y-2">
-                  <p className="text-sm text-foreground">
+                  <p className="text-base text-foreground">
                     Please indicate your willingness to cooperate on the following security areas. Please select 'Yes' or 'No' for each point.
                   </p>
                   <div className="flex items-start gap-x-2 rounded-md border border-red-700 bg-yellow-400 p-3 text-sm text-red-800">
@@ -649,7 +661,7 @@ export default function ComplianceForm() {
                       </FormControl>
                       <FormDescription>
                         Need help finding the full version?{' '}
-                        <a href="https://ce-knowledge-hub.iasme.co.uk/space/CEKH/2834563080/Operating+System+Support" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                        <a href={process.env.NEXT_PUBLIC_FORM_OS_SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="text-primary underline">
                           Click here for instructions.
                         </a>
                       </FormDescription>
@@ -664,7 +676,7 @@ export default function ComplianceForm() {
                       </FormControl>
                       <FormDescription>
                         Pre-filled from browser data. Please verify and correct if needed. Need help finding the Version?{' '}
-                        <a href="https://www.whatismybrowser.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                        <a href={process.env.NEXT_PUBLIC_FORM_BROWSER_VERSION_URL} target="_blank" rel="noopener noreferrer" className="text-primary underline">
                           Click here
                         </a>.
                       </FormDescription>
@@ -683,6 +695,11 @@ export default function ComplianceForm() {
                               <FormMessage />
                           </FormItem>
                       )} />
+                      {watchedDeviceType === 'mobile devices (smartphone, tablet or hybrid)' && (
+                          <div className="rounded-md border border-blue-300 bg-blue-50 p-3 text-sm text-blue-800">
+                              <p>If device type is Mobile from Step 2 , it is okay for your answer above "None or Not Applicable (N/A)" on the question "Malware Protection Software " as there is no need to install such protections on Non-rooted/jailbroken devices</p>
+                          </div>
+                      )}
                       <FormField control={form.control} name="Email_Client_Used" render={({ field }) => (
                           <FormItem>
                               <MandatoryLabel>Email Client Used</MandatoryLabel>
@@ -699,20 +716,21 @@ export default function ComplianceForm() {
                       )} />
                       <Separator className="my-6" />
 
+                      <h3 className="font-bold text-black">Cloud Accounts and Services</h3>
                       <div className="space-y-2">
-                        <p className="text-sm text-foreground">
+                        <p className="text-base text-foreground">
                             The following questions concern other cloud services you might use for your work at LCA Teignbridge, (e.g. something you use daily, you might not think of as being a cloud service). This helps the IT Manager understand what other services may need security considerations. This is because all cloud services must be enabled with MFA (e.g. using Okta Verify for Casebook/Skillbook), and if MFA cannot be enabled, then alternative configurations must be implemented.
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                            Known services like Google Workspace, Okta, Casebook, 3CX, and BreatheHR do not need to be listed.
+                        <p className="text-base text-foreground">
+                            Known services like Google Workspace (e.g. CA Emails, Google docs like KeyLinks, Google Drive ...), Okta App (e.g. Casebook ... ), 3CX telephone system, and BreatheHR do not need to be listed.
                         </p>
                       </div>
 
                       <FormField control={form.control} name="Other_Cloud_Services" render={({ field }) => (
                           <FormItem>
-                              <FormLabel className="font-bold">Please list any other cloud-based services you use for your duties at LCA Teignbridge.</FormLabel>
+                              <FormLabel className="font-bold text-base">Please list any other cloud-based services you use for your duties at LCA Teignbridge.</FormLabel>
                               <FormControl>
-                                  <Textarea placeholder="e.g., Accounting - QuickBooks Online, Sage Business Cloud" {...field} />
+                                  <Textarea placeholder="e.g., Accounting - (QuickBooks Online, Sage Business Cloud) or other services used in; advice giving (possibly applying for food bank vouchers via data.foodbank.org.uk), management (CAF Bank etc.) , support  ( Social media platforms and scheduling, etc.), and governance (HMRC, companies house, etc.)" {...field} className="min-h-[120px]" />
                               </FormControl>
                               <FormMessage />
                           </FormItem>
@@ -723,7 +741,7 @@ export default function ComplianceForm() {
                           name="MFA_On_Cloud_Services"
                           render={({ field }) => (
                               <FormItem>
-                                  <FormLabel className="font-bold">Are you able to secure these accounts with Multi-Factor Authentication (MFA)?</FormLabel>
+                                  <FormLabel className="font-bold text-base">Are you able to secure these accounts with Multi-Factor Authentication (MFA)?</FormLabel>
                                   <FormControl>
                                       <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                           <FormItem>
@@ -806,7 +824,7 @@ export default function ComplianceForm() {
               {currentStep === 6 && (
                 <div className="space-y-6">
                   <h3 className="font-semibold text-lg mb-4 text-primary">Additional Help, Feedback & Consents</h3>
-                  <p className="text-foreground">If you need one-to-one help with enabling BYOD, please register your request below. There is also a text box below to add your feedback or comments.</p>
+                  <p className="text-foreground text-base">If you need one-to-one help with enabling BYOD, please register your request below. There is also a text box below to add your feedback or comments.</p>
                   <FormItem>
                     <MandatoryLabel>Do you need personalised help for RAR/BYOD?</MandatoryLabel>
                     <FormField
@@ -833,7 +851,7 @@ export default function ComplianceForm() {
                   </FormItem>
                   <FormField control={form.control} name="Comments_Feedback" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold">Feedback / Other Comments</FormLabel>
+                      <FormLabel className="font-bold text-base">Feedback / Other Comments</FormLabel>
                       <FormControl>
                         <Textarea placeholder="Any other information you'd like to provide?" {...field} />
                       </FormControl>
@@ -957,7 +975,7 @@ export default function ComplianceForm() {
               <div className="flex-1 text-center sm:text-left">
                 <p className="text-sm text-foreground">
                   For more details on what data we collect and why, please{' '}
-                  <a href="https://docs.google.com/document/d/1B8agUZJWDIQXdiNhSDQl33xvhcMKK7FiRulOsy-6kko/edit?tab=t.0" target="_blank" rel="noopener noreferrer" className="font-bold text-primary underline">
+                  <a href={process.env.NEXT_PUBLIC_GUIDANCE_PRIVACY_NOTICE_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-primary underline">
                     read our "RAR" Data & Privacy Notice
                   </a>.
                 </p>
@@ -973,7 +991,3 @@ export default function ComplianceForm() {
     </>
   );
 }
-
-    
-
-    

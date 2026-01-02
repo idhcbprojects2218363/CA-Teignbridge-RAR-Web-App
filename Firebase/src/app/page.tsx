@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileQuestion, HelpCircle, CheckCircle, ShieldQuestion } from "lucide-react";
@@ -35,17 +37,17 @@ export default function LandingPage() {
             <p>
               Guidance on the circumstances under which you should complete the RAR form.
             </p>
-            <Button variant="link" className="px-0 pt-4 text-base justify-start" asChild>
-                <a href="https://docs.google.com/document/d/15vB9mI_JtNVp7zNMxcv7ztsKIK3_hfAuidZmS7Mdhqg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">When to Use the Form</a>
+            <Button variant="link" className="h-auto whitespace-normal px-0 pt-4 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_WHEN_TO_USE_FORM_URL} target="_blank" rel="noopener noreferrer">When to Use the Form</a>
             </Button>
-            <Button variant="link" className="px-0 pt-2 text-base justify-start" asChild>
-                <a href="https://docs.google.com/document/d/1OpTbxKHke7epPdYoSLqp-JjviVzpHi6mJl52lIqBFS0/edit?usp=sharing" target="_blank" rel="noopener noreferrer">When NOT to Use the Form</a>
+            <Button variant="link" className="h-auto whitespace-normal px-0 pt-2 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_WHEN_NOT_TO_USE_FORM_URL} target="_blank" rel="noopener noreferrer">When NOT to Use the Form</a>
             </Button>
-            <Button variant="link" className="px-0 pt-2 text-base justify-start" asChild>
-                <a href="https://docs.google.com/document/d/1LUJDYWfittqWyCUk0dxaRebL3P3fpmJ0giwFX7JTqDg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Is This Form Mandatory?</a>
+            <Button variant="link" className="h-auto whitespace-normal px-0 pt-2 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_IS_FORM_MANDATORY_URL} target="_blank" rel="noopener noreferrer">Is This Form Mandatory?</a>
             </Button>
-            <Button variant="link" className="px-0 pt-2 text-base justify-start" asChild>
-                <a href="https://docs.google.com/document/d/1Sh1-Sb9qsasVIAgg0BAtRf-e5qYxq1-Ck4NY86LIjTM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">View Use-Case Scenarios</a>
+            <Button variant="link" className="h-auto whitespace-normal px-0 pt-2 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_USE_CASE_SCENARIOS_URL} target="_blank" rel="noopener noreferrer">View Use-Case Scenarios</a>
             </Button>
           </CardContent>
         </Card>
@@ -60,11 +62,11 @@ export default function LandingPage() {
             <p>
               Understand the importance of the RAR process, why we ask specific questions, and what data we collect.
             </p>
-             <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="https://docs.google.com/document/d/1v1lHiZv1lXcC_iPISWoI3lk9aGJArWMvSGucME-xzRk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Learn about the RAR process</a>
+             <Button variant="link" className="h-auto whitespace-normal px-0 pt-4 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_RAR_PROCESS_URL} target="_blank" rel="noopener noreferrer">Learn about the RAR process</a>
             </Button>
-            <Button variant="link" className="px-0 pt-2 text-base" asChild>
-                <a href="https://docs.google.com/document/d/1B8agUZJWDIQXdiNhSDQl33xvhcMKK7FiRulOsy-6kko/edit?tab=t.0" target="_blank" rel="noopener noreferrer">Read our "RAR" Data & Privacy Notice</a>
+            <Button variant="link" className="h-auto whitespace-normal px-0 pt-2 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_PRIVACY_NOTICE_URL} target="_blank" rel="noopener noreferrer">Read our "RAR" Data & Privacy Notice</a>
             </Button>
           </CardContent>
         </Card>
@@ -75,12 +77,15 @@ export default function LandingPage() {
               What to do After Submission
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col">
             <p>
               Find out about the next steps, what to expect, and how to get help after you have submitted the form.
             </p>
-            <Button variant="link" className="px-0 pt-4 text-base" asChild>
-                <a href="https://docs.google.com/document/d/1bcFQqoVxUZUtMcK8GgXE7tqyTAF2-p9Iwq2Ug3bj_fQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">See Next Steps</a>
+            <Button variant="link" className="h-auto whitespace-normal px-0 pt-4 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_AFTER_SUBMISSION_URL} target="_blank" rel="noopener noreferrer">Next Steps: After your submission</a>
+            </Button>
+            <Button variant="link" className="h-auto whitespace-normal px-0 pt-2 text-base justify-start text-left" asChild>
+                <a href={process.env.NEXT_PUBLIC_GUIDANCE_SELF_HELP_URL} target="_blank" rel="noopener noreferrer">Next Steps: Self-Help Guide and Requesting Assistance</a>
             </Button>
           </CardContent>
         </Card>
